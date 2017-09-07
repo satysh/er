@@ -109,9 +109,9 @@ void create_target_h2() {
 
   Double_t R_min,R_max,thsp_min,thsp_max;
   thsp_min = 0;
-  thsp_max = TMath::ATan(0.1/1.)*TMath::RadToDeg();
-  R_max = 1./TMath::Sin(TMath::ATan(0.1/1.));   //cm
-  R_min = R_max - 0.3; //cm
+  thsp_max = TMath::ATan(10./49.5)*TMath::RadToDeg();
+  R_max = 5.05;   //cm
+  R_min = R_max - 0.1; //cm
 
   TGeoSphere *sector1 = new TGeoSphere("sector1",R_min,R_max,thsp_min,thsp_max,0,360.);
   TGeoSphere *sector2 = new TGeoSphere("sector2",R_min,R_max,thsp_min,thsp_max,0,360.);  
