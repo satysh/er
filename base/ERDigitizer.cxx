@@ -105,9 +105,17 @@ void ERDigitizer::Exec(Option_t* opt){
           fTime = point->GetTime();
         }
       }
+      TString volName = itSenVol.first(fName.Length(),itSenVol.first.Length()-fName.Length()-5);
+      
+      if (fSenVolErrors.find(volName) == fSenVolErrors.end()){
+        cout << "Error rule for vol name " << volName << " not found!!!" << endl;
+      }
+      else{ 
+        ERDigitizerError error = fSenVolErrors[volName];
+        Float_t sigma = error.a + error.b*TMath::Sqrt(fEdep) + error.c*fEdep;
+        fEdep = gRandom->Gaus(fEdep, sigma);
+      }
       /*
-      edep = gRandom->Gaus(edep, fElossSigma);
-
       if (edep < fElossThreshold)
         continue;
 
@@ -148,5 +156,8 @@ ERDigi* ERDigitizer::AddDigi(TClonesArray* digis)
   return digi;
 }
 // ----------------------------------------------------------------------------
+void ERDigitizer::AddError(TString volName,Float_t a, Float_t b, Float_t c){
+  fSenVolErrors[volName] = ERDigitizerError(a,b,c);
+}
 //-----------------------------------------------------------------------------
 ClassImp(ERDigitizer)

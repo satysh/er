@@ -13,6 +13,19 @@
 
 #include "ERDigi.h"
 
+struct ERDigitizerError
+{
+  ERDigitizerError(){}
+  ERDigitizerError(Float_t ea, Float_t eb, Float_t ec){
+    a = ea;
+    b = eb;
+    c = ec;
+  }
+  Float_t a;
+  Float_t b;
+  Float_t c;
+};
+
 class ERDigitizer : public FairTask {
 
 public:
@@ -38,6 +51,8 @@ public:
 
   /** Virtual method Reset **/
   virtual void Reset();
+
+  void AddError(TString volName,Float_t a, Float_t b, Float_t c);
   
 protected:
   
@@ -49,7 +64,8 @@ private:
 
 private:
   std::map<TString,TClonesArray*> fSenVolDigis;
-  std::map<TString,TClonesArray*> fSenVolPoints; 
+  std::map<TString,TClonesArray*> fSenVolPoints;
+  std::map<TString,ERDigitizerError> fSenVolErrors; 
   Float_t fEdep;
   Float_t fTime;
   Int_t fVolNb;
