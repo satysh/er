@@ -16,5 +16,6 @@
 #pragma link C++ class ERRawEvent+;
 #pragma link C++ class ERParticle+;
 #pragma link C++ class ERPoint+;
+#pragma link C++ class ERDigi+;
 
 #endif

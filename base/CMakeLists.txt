@@ -30,6 +30,7 @@ ERRunSim.cxx
 ERSupport.cxx
 ERDetectorContFact.cxx
 ERDetectorGeoPar.cxx
+ERDigitizer.cxx
 )
 
 # fill list of header files from list of source files

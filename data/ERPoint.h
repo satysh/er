@@ -90,6 +90,7 @@ class ERPoint : public FairMCPoint
   Double_t GetTime() const {return fTimeIn;}
   Double_t GetTimeIn() const {return fTimeIn;}
   Double_t GetTimeOut() const {return fTimeOut;}
+  Double_t GetVolNb() const {return fVolNb;}
   Double_t GetLength() const;
 
   void PositionIn(TVector3& pos)  { pos.SetXYZ(fX, fY, fZ); }
