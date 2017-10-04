@@ -115,7 +115,6 @@ void ERDigitizer::Exec(Option_t* opt){
       */
       fVolNb = itVol.first;
       ERDigi *digi = AddDigi(fSenVolDigis[itSenVol.first]);
-      cout << 1 << endl;
       /*
       for (const auto itPoint: itSensor.second){
         digi->AddLink(FairLink("RTelescopePoint", itPoint));
