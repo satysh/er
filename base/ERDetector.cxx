@@ -16,6 +16,8 @@
 #include "FairRootManager.h"
 #include "FairLogger.h"
 
+#include <iostream>
+using namespace std;
 #include "ERDetectorGeoPar.h"
 //-------------------------------------------------------------------------------------------------
 ERDetector::ERDetector()
@@ -131,6 +133,7 @@ void ERDetector::EndOfEvent() {
   if (fVerbose > 1){
     Print();
   }
+  cout << fFullEnergy << endl;
   Reset();
 }
 //-------------------------------------------------------------------------------------------------
@@ -207,6 +210,7 @@ void ERDetector::FinishNewPoint() {
   
   if (fELoss > 0.) {
     TClonesArray* points = fSenVolumes[gMC->CurrentVolName()];
+    cout << "FinishNewPoint";
     AddPoint(points);
     fFullEnergy+=fELoss;
     fFullLY+=fLightYield;
@@ -216,6 +220,7 @@ void ERDetector::FinishNewPoint() {
 ERPoint* ERDetector::AddPoint(TClonesArray* points) {
   TClonesArray& clref = *points;
   Int_t size = clref.GetEntriesFast();
+  cout << fELoss << endl;
   return new(clref[size]) ERPoint(fEventID, fTrackID, fMot0TrackID, fVolNb,
     fMass, fPosIn.Vect(),fPosInLocal,fPosOut.Vect(),fMomIn.Vect(),fMomOut.Vect(),fTimeIn,
     fTimeOut,fTrackLength, fELoss, fLightYield,gMC->TrackPid(), gMC->TrackCharge());

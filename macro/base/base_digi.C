@@ -22,8 +22,8 @@ void base_digi(Int_t nEvents = 1000){
   // ------------------------NeuRadDigitizer---------------------------------
   Int_t verbose = 1; // 1 - only standard log print, 2 - print digi information 
   ERDigitizer* digitizer = new ERDigitizer("TestDetector",verbose);
-  digitizer->AddError("gas",0.,0.01,0.01);
-  digitizer->AddError("plastic",0.001,0.,0.);
+  digitizer->AddError("gas",0.,0.0,0.0);
+  digitizer->AddError("plastic",0.0,0.,0.);
   fRun->AddTask(digitizer);
   // ------------------------------------------------------------------------
   

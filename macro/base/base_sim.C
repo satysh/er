@@ -39,10 +39,10 @@ void base_sim(Int_t nEvents = 10){
    * 1 - Print points after each event
   */
   Int_t verbose = 0;
-  ERDetector* detector= new ERDetector("TestDetector", kTRUE,verbose);
-  detector->SetGeometryFileName("beamdet.v3.geo_2.root");
+    ERDetector* detector= new ERDetector("TestDetector", kTRUE,verbose);
+  detector->SetGeometryFileName("base.geo.root");
   detector->AddSensetive("gas");
-  detector->AddSensetive("plastic");
+  detector->AddSensetive("Si");
   run->AddModule(detector);
 
  // FairModule* target = new ERTarget("BeamDetTarget", kTRUE, 1);
@@ -86,12 +86,16 @@ void base_sim(Int_t nEvents = 10){
   Int_t pdgId = 2212; // 
   Double32_t theta1 = 0.;  // polar angle distribution
   Double32_t theta2 = 0.;
-  Double32_t momentum = 0.05; //GeV
+  //Double32_t momentum = 0.05; //GeV
+  Double32_t kin_energy = .05; //GeV
+  Double_t mass = TDatabasePDG::Instance()->GetParticle(pdgId)->Mass();
+  Double32_t momentum = TMath::Sqrt(kin_energy*kin_energy + 2.*kin_energy*mass); //GeV
+
   FairBoxGenerator* boxGen = new FairBoxGenerator(pdgId, 1);
   boxGen->SetThetaRange(theta1, theta2);
   boxGen->SetPRange(momentum, momentum);
   boxGen->SetPhiRange(0,360);
-  boxGen->SetXYZ(0.,0., -100.0);
+  boxGen->SetXYZ(0.,0., 0.);
 
   primGen->AddGenerator(boxGen);
   run->SetGenerator(primGen);
