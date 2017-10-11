@@ -132,6 +132,8 @@ protected:
 	//map of sensetive volumes points collection collection, fSenVolumes[senVol] = points
 	std::map<TString,TClonesArray*> fSenVolumes;
 
+    std::vector<TString> fSenNames;   ///< Sensetive volumes sustring, that user set 
+
 	Int_t   fVerbose;                 ///< Verbosity level                
 
     Float_t fFullEnergy;              ///< Sum Edep in event in sensetive volume

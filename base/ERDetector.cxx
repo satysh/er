@@ -16,8 +16,6 @@
 #include "FairRootManager.h"
 #include "FairLogger.h"
 
-#include <iostream>
-using namespace std;
 #include "ERDetectorGeoPar.h"
 //-------------------------------------------------------------------------------------------------
 ERDetector::ERDetector()
@@ -39,11 +37,11 @@ ERDetector::ERDetector(const char* Name, Bool_t Active, Int_t DetId/*=0*/)
 void ERDetector::ConstructGeometry() {
   TString fileName = GetGeometryFileName();
   if(fileName.EndsWith(".root")) {
-    std::cout << "Constructing geometry from ROOT file " << fileName.Data() << std::endl;
+    LOG(INFO) << "Constructing geometry from ROOT file " << fileName.Data() << FairLogger::endl;
     ConstructRootGeometry();
   }
   else if (fileName.EndsWith(".gdml")) {
-    std::cout << "Constructing geometry from GDML file " << fileName.Data() << std::endl;
+    LOG(INFO) << "Constructing geometry from GDML file " << fileName.Data() << FairLogger::endl;
     TGeoRotation *zeroRotation = new TGeoRotation();
     zeroRotation->RotateX(0.);
     zeroRotation->RotateY(0.);
@@ -51,12 +49,12 @@ void ERDetector::ConstructGeometry() {
     ConstructGDMLGeometry(new TGeoCombiTrans(.0,.0,.0, zeroRotation));
   }
   else {
-    LOG(FATAL) << "Geometry file name is not set" << std::endl;
+    LOG(FATAL) << "Geometry file name is not set" << FairLogger::endl;
   }
 }
 //-------------------------------------------------------------------------------------------------
 void ERDetector::AddSensetive(TString name){
-  fSenVolumes[name] = new TClonesArray("ERPoint");
+  fSenNames.push_back(name);
 }
 //-------------------------------------------------------------------------------------------------
 TClonesArray* ERDetector::GetCollection(Int_t iColl) const {
@@ -133,7 +131,6 @@ void ERDetector::EndOfEvent() {
   if (fVerbose > 1){
     Print();
   }
-  cout << fFullEnergy << endl;
   Reset();
 }
 //-------------------------------------------------------------------------------------------------
@@ -174,10 +171,11 @@ void ERDetector::CopyClones(TClonesArray* cl1, TClonesArray* cl2, Int_t offset) 
 //-------------------------------------------------------------------------------------------------
 Bool_t ERDetector::CheckIfSensitive(std::string name) {
   TString curVolName = name;
-  for(const auto &itSen: fSenVolumes){
-    TString volName = itSen.first;
-    if(curVolName.Contains(volName))
+  for(const auto &volNameSubsting: fSenNames){
+    if(curVolName.Contains(volNameSubsting)){
+      fSenVolumes[curVolName] = new TClonesArray("ERPoint");
       return kTRUE;
+    }
   }
   return kFALSE;
 }
@@ -210,17 +208,16 @@ void ERDetector::FinishNewPoint() {
   
   if (fELoss > 0.) {
     TClonesArray* points = fSenVolumes[gMC->CurrentVolName()];
-    cout << "FinishNewPoint";
     AddPoint(points);
     fFullEnergy+=fELoss;
     fFullLY+=fLightYield;
+
   }                
 }
 //-------------------------------------------------------------------------------------------------
 ERPoint* ERDetector::AddPoint(TClonesArray* points) {
   TClonesArray& clref = *points;
   Int_t size = clref.GetEntriesFast();
-  cout << fELoss << endl;
   return new(clref[size]) ERPoint(fEventID, fTrackID, fMot0TrackID, fVolNb,
     fMass, fPosIn.Vect(),fPosInLocal,fPosOut.Vect(),fMomIn.Vect(),fMomOut.Vect(),fTimeIn,
     fTimeOut,fTrackLength, fELoss, fLightYield,gMC->TrackPid(), gMC->TrackCharge());
