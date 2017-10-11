@@ -83,8 +83,8 @@ class ERQTelescopeCsIPoint : public FairMCPoint
   // Int_t Sector() const {return fSector;}
   // Int_t Sensor() const {return fSensor;}
 
-  Int_t          N_Wall()  {return fN_Wall};
-  Int_t          N_Block() {return fN_Block};
+  Int_t          N_Wall()  {return fN_Wall;}
+  Int_t          N_Block() {return fN_Block;}
 
   /** Check for distance between in and out **/
   Bool_t IsUsable() const;
