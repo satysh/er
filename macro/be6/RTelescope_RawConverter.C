@@ -23,6 +23,9 @@ void RTelescope_RawConverter(Int_t nEvents = 1){
   // ------------------------NeuRadDigitizer---------------------------------
   Int_t verbose = 1; // 1 - only standard log print, 2 - print digi information
   ERRTelescopeRawConverter* converter = new ERRTelescopeRawConverter(verbose);
+  TString workDir = gSystem->Getenv("VMCWORKDIR");
+  converter->SetSiCalFile(workDir+TString("/input/rtelescope/beSi1.cal"));
+  converter->SetCsICalFile(workDir+TString("/input/rtelescope/beCsIp1.cal"));
   fRun->AddTask(converter);
   // ------------------------------------------------------------------------
 
@@ -32,7 +35,7 @@ void RTelescope_RawConverter(Int_t nEvents = 1){
   parInput->open(parFile.Data(), "UPDATE");
   rtdb->setFirstInput(parInput);
   // -----   Intialise and run   --------------------------------------------
-  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
+  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
   fRun->Init();
   fRun->Run(0, nEvents);
   // ------------------------------------------------------------------------

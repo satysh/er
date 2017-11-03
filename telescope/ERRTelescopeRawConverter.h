@@ -7,6 +7,7 @@
 #define ERRTelescopeRawConverter_H
 
 #include "TClonesArray.h"
+#include "TString.h"
 
 #include "FairTask.h"
 
@@ -43,8 +44,11 @@ class ERRTelescopeRawConverter : public FairTask
 
         void GetParameters();
 
-        Float_t parameters_Si[160][4];
-        Float_t parameters_CsI[32][5];
+        Float_t fParametersSi[160][6];
+        Float_t fParametersCsI[32][7];
+
+        void SetSiCalFile(TString name) {fSiCalFile = name;}
+        void SetCsICalFile(TString name) {fCsICalFile = name;}
 
     protected:
         //Input arrays
@@ -60,6 +64,10 @@ class ERRTelescopeRawConverter : public FairTask
 
         //Output array
         AculRaw *fAculRaw;
+
+        //calibration files
+        TString fSiCalFile;
+        TString fCsICalFile;
 
     private:
         virtual void SetParContainers();

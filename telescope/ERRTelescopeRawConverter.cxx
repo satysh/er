@@ -1,17 +1,20 @@
 #include "ERRTelescopeRawConverter.h"
 
-#include <vector>
-
 #include "TVector3.h"
 #include "TGeoMatrix.h"
 #include "TMath.h"
 #include "TRandom3.h"
+#include "TFile.h"
 
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include "FairLogger.h"
 #include <iostream>
 #include <algorithm>
+#include <vector>
+#include <fstream>
+
 using namespace std;
 
 #include "ERDetectorList.h"
@@ -27,7 +30,9 @@ ERRTelescopeRawConverter::ERRTelescopeRawConverter()
     fRTelescope2Si1DigiS(NULL),
     fRTelescope2Si2DigiS(NULL),
     fRTelescope2CsIDigi(NULL),
-    fAculRaw(NULL)
+    fAculRaw(NULL),
+    fSiCalFile(""),
+    fCsICalFile("")
 {
 }
 // ----------------------------------------------------------------------------
@@ -43,7 +48,9 @@ ERRTelescopeRawConverter::ERRTelescopeRawConverter(Int_t verbose)
     fRTelescope2Si1DigiS(NULL),
     fRTelescope2Si2DigiS(NULL),
     fRTelescope2CsIDigi(NULL),
-    fAculRaw(0)
+    fAculRaw(NULL),
+    fSiCalFile(""),
+    fCsICalFile("")
 {
 }
 // ----------------------------------------------------------------------------
@@ -69,6 +76,8 @@ void ERRTelescopeRawConverter::SetParContainers()
 // ----------------------------------------------------------------------------
 InitStatus ERRTelescopeRawConverter::Init()
 {
+    if (fSiCalFile == "") Fatal("Init", "Silicon calibration file not defined");
+    if (fCsICalFile == "") Fatal("Init", "CsI calibration file not defined");
     // Get input array
     FairRootManager* ioman = FairRootManager::Instance();
     if ( ! ioman ) Fatal("Init", "No FairRootManager");
@@ -102,6 +111,8 @@ InitStatus ERRTelescopeRawConverter::Init()
     fAculRaw = new AculRaw();
     ioman->Register("RTelescopeAculRaw.", "RTelescope Acul Raw", fAculRaw, kTRUE);
 
+    GetParameters();
+
   /*fRTelescopeSetup = ERRTelescopeSetup::Instance();
     fRTelescopeSetup->Print();*/
 
@@ -113,8 +124,6 @@ InitStatus ERRTelescopeRawConverter::Init()
 void ERRTelescopeRawConverter::Exec(Option_t *opt)
 {
     Reset();
-
-    GetParameters();
 
     vector<Int_t>               SiDigi;
     vector<Int_t>::iterator     it_Nb;
@@ -147,19 +156,25 @@ void ERRTelescopeRawConverter::Exec(Option_t *opt)
 
         for(it_Nb = SiDigi.begin(); it_Nb < SiDigi.end(); ++it_Nb)
         {
+            LOG(DEBUG) << "Silicon digi: " << *it_Nb << FairLogger::endl;
+
             ERRTelescopeSiDigi *si_digi = (ERRTelescopeSiDigi*)SiBranch->At(*it_Nb);
             Int_t  telescopeNb = si_digi->TelescopeNb();
             Int_t  detectorNb = si_digi->DetectorNb();
             Int_t  Side = si_digi->Side();                   // 1 - sector, 0 - ring
             Int_t  Nb = si_digi->Nb(); 
-            Int_t  edep = si_digi->Edep();
+            Double_t  edep = si_digi->Edep()*1e3;
 
             Int_t  j = 80*(telescopeNb - 1) + 16*(detectorNb - 1) + 16*(Side == 1 ? 0 : 1) + Nb;
-            Int_t  StationNb = parameters_Si[j][0];
-            Int_t  ChanelNb = parameters_Si[j][1];
-            Double_t  a = parameters_Si[j][2];
-            Double_t  b = parameters_Si[j][3];
-            Double_t  ACP = (edep - b) / a;
+            Int_t  StationNb = fParametersSi[j][0];
+            Int_t  ChanelNb = fParametersSi[j][1];
+            Double_t  a = fParametersSi[j][3];
+            Double_t  b = fParametersSi[j][4];
+            Int_t  ACP = (Int_t)((edep - b) / a);
+
+            LOG(DEBUG) << "telescope " << telescopeNb << ", detector " << detectorNb << ", Side " << Side << FairLogger::endl;
+            LOG(DEBUG) << "parameter raw " << j << ", a = " << a << ", b = " << b << FairLogger::endl;
+            LOG(DEBUG) << "edep " << edep << ", ACP " << ACP << FairLogger::endl;
 
             fAculRaw->C3[StationNb][ChanelNb] = ACP;
         }
@@ -186,29 +201,40 @@ void ERRTelescopeRawConverter::Exec(Option_t *opt)
 
         for(it_Nb = CsIDigi.begin(); it_Nb < CsIDigi.end(); ++it_Nb)
         {
+            LOG(DEBUG) << "CsI digi: " << *it_Nb << FairLogger::endl;
             ERRTelescopeCsIDigi *csi_digi = (ERRTelescopeCsIDigi*)(CsIBranch->At(*it_Nb));
             Int_t telescopeNb = csi_digi->TelescopeNb();
             Int_t Nb = csi_digi->CrystallNB(); 
-            Int_t edep = csi_digi->Edep();
+            Double_t edep = csi_digi->Edep()*1e3;
 
             Int_t j = 16 * (telescopeNb - 1) + Nb;
-            Int_t StationNb = parameters_CsI[j][0];
-            Int_t ChanelNb = parameters_CsI[j][1];
-            Double_t a = parameters_CsI[j][2];
-            Double_t b = parameters_CsI[j][3];
-            Double_t p = parameters_CsI[j][4];
+            Int_t StationNb = fParametersCsI[j][0];
+            Int_t ChanelNb = fParametersCsI[j][1];
+            Double_t a = fParametersCsI[j][3];
+            Double_t b = fParametersCsI[j][4];
+            Double_t p = fParametersCsI[j][5];
             Int_t x0 = 500;
             Int_t N1 = x0; // N1 = x0 = 500 
-            Double_t ACP = 0;
+            Int_t ACP = 0;
             Double_t c2 = a*(x0 - p) / (a*x0 + b);
             Double_t c1 = (a*x0 + b) / pow(x0-p, c2);
 
-            if (edep > 0 && edep < c1 * pow(N1-p, c2))
-                ACP = pow( edep/c1, c2);
-            else
-                ACP = (edep - b) / a;
+            if (edep > 0 && edep < c1 * pow(N1-p, c2)){
+                ACP = (Int_t)(pow( edep/c1, c2));
+                LOG(DEBUG) << "telescope " << telescopeNb << FairLogger::endl;
+                LOG(DEBUG) << "parameter raw " << j << ", c1 = " << c1 << ", b = " << b << FairLogger::endl;
+                LOG(DEBUG) << "edep " << edep << ", ACP " << ACP << FairLogger::endl;
+            }
+            else{
+                ACP = (Int_t)((edep - b) / a);
+                LOG(DEBUG) << "telescope " << telescopeNb << FairLogger::endl;
+                LOG(DEBUG) << "parameter raw " << j << ", a = " << a << ", b = " << b << FairLogger::endl;
+                LOG(DEBUG) << "edep " << edep << ", ACP " << ACP << FairLogger::endl;
+            }
 
             fAculRaw->C3[StationNb][ChanelNb] = ACP;
+
+
         }
 
         CsIDigi.clear();
@@ -219,41 +245,45 @@ void ERRTelescopeRawConverter::Exec(Option_t *opt)
 //----------------------------------------------------------------------------
 void ERRTelescopeRawConverter::GetParameters()
 {
-    Int_t     i = 0;
-    Int_t     si;  // station
-    Int_t     ti;  // chanel
-    Double_t  df;  // a - coefficient
-    Double_t  ds;  // b - coefficient
-    Double_t  dt;  // p - piedestal 
-    FILE     *pSiFile;
-    FILE     *pCsIFile;
+    Int_t i = 0;
+    ifstream     SiFile;
+    ifstream     CsIFile;
 
-  pSiFile = fopen ("beSi1.cal","a+");
-  pCsIFile = fopen ("beCsIp1.cal","a+");  //"beCsIa1.cal"  for alpha
+    SiFile.open(fSiCalFile);
+    if (!SiFile.is_open()) Fatal("GetParameters", "Can`t open file silicon calibration file!");
+    CsIFile.open(fCsICalFile);
+    if (!CsIFile.is_open()) Fatal("GetParameters", "Can`t open file CsI calibration file!");
 
-  while ( fscanf (pSiFile, "%*d %d %d %lf %lf %*lf \n", &si, &ti, &df, &ds) == 4) // check it
-  {
-    parameters_Si[i][0]= si;
-    parameters_Si[i][1]= ti;
-    parameters_Si[i][1]= df;
-    parameters_Si[i][2]= ds;
-    ++i;
-  }
+    LOG(DEBUG2) << "Get silicon calibration params" << FairLogger::endl;
+    while ( !SiFile.eof()) // check it
+    {
+        SiFile >> fParametersSi[i][0];
+        SiFile >> fParametersSi[i][1];
+        SiFile >> fParametersSi[i][2];
+        SiFile >> fParametersSi[i][3];
+        SiFile >> fParametersSi[i][4];
+        SiFile >> fParametersSi[i][5];
+        LOG(DEBUG2) << fParametersSi[i][0] << " " << fParametersSi[i][1] << " " << fParametersSi[i][2] << FairLogger::endl;
+        i++;
+    }
 
-  i = 0;
- 
-  while ( fscanf (pCsIFile, "%*d %d %d %lf %lf %lf %*lf \n", &si, &ti, &df, &ds, &dt) == 5)
-  {
-    parameters_CsI[i][0]= si;
-    parameters_CsI[i][1]= ti;
-    parameters_CsI[i][0]= df;
-    parameters_CsI[i][1]= ds;
-    parameters_CsI[i][2]= dt;
-    ++i;
-  }
+    i = 0;
+    LOG(DEBUG2) << "Get CsI calibration params" << FairLogger::endl;
+    while ( !CsIFile.eof())
+    {   
+        CsIFile >> fParametersCsI[i][0];
+        CsIFile >> fParametersCsI[i][1];
+        CsIFile >> fParametersCsI[i][2];
+        CsIFile >> fParametersCsI[i][3];
+        CsIFile >> fParametersCsI[i][4];
+        CsIFile >> fParametersCsI[i][5];
+        CsIFile >> fParametersCsI[i][6];
+        LOG(DEBUG2) << fParametersCsI[i][0] << " " << fParametersCsI[i][1] << " " << fParametersCsI[i][2] << FairLogger::endl;
+        i++;
+    }
 
-  fclose (pSiFile);
-  fclose (pCsIFile);
+    SiFile.close();
+    CsIFile.close();
 }
 //----------------------------------------------------------------------------
 
