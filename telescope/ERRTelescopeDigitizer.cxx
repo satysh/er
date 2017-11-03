@@ -94,6 +94,8 @@ InitStatus ERRTelescopeDigitizer::Init()
     fSiPoints11 = (TClonesArray*) ioman->GetObject("RTelescope1Si1Point");
     if ( ! fSiPoints11) Fatal("Init", "Can`t find collection RTelescope1Si1Point!");
 
+    fSiPoints12 = (TClonesArray*) ioman->GetObject("RTelescope1Si2Point");
+    if ( ! fSiPoints11) Fatal("Init", "Can`t find collection RTelescope1Si2Point!");
 
     fSiPoints21 = (TClonesArray*) ioman->GetObject("RTelescope2Si1Point");
     if ( ! fSiPoints21) Fatal("Init", "Can`t find collection fSiPoints21!");
@@ -251,11 +253,11 @@ void ERRTelescopeDigitizer::Exec(Option_t* opt)
                 for (itPoint = iterNb->second.begin(); itPoint != iterNb->second.end(); ++itPoint)
                     si_digi->AddLink(FairLink( str[i], *itPoint));
             }
-
+            
             SiPoints_Ring.clear();
         }
     }
-
+    
     map<Int_t, vector<Int_t>>            CsIpoints;
 
     TClonesArray *CsIBranch = NULL;

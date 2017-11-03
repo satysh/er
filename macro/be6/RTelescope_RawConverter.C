@@ -1,7 +1,7 @@
-void RTelescope_SiDigi(Int_t nEvents = 1000){
+void RTelescope_RawConverter(Int_t nEvents = 1){
   //---------------------Files-----------------------------------------------
-  TString inFile = "sim.root";
-  TString outFile = "digi.root";
+  TString inFile = "digi.root";
+  TString outFile = "convert.root";
   TString parFile = "par.root";
   TString parOutFile = "parOut.root";
   // ------------------------------------------------------------------------
@@ -18,11 +18,12 @@ void RTelescope_SiDigi(Int_t nEvents = 1000){
   //-------- Set MC event header --------------------------------------------
   EREventHeader* header = new EREventHeader();
   fRun->SetEventHeader(header);
+  
   //------------------------------------------------------------------------
   // ------------------------NeuRadDigitizer---------------------------------
   Int_t verbose = 1; // 1 - only standard log print, 2 - print digi information
-  ERRTelescopeDigitizer* digitizer = new ERRTelescopeDigitizer(verbose);
-  fRun->AddTask(digitizer);
+  ERRTelescopeRawConverter* converter = new ERRTelescopeRawConverter(verbose);
+  fRun->AddTask(converter);
   // ------------------------------------------------------------------------
 
   // -----------Runtime DataBase info -------------------------------------
