@@ -11,9 +11,9 @@ OUTDIR=output_digi_parallel
 GRAPHSOUTDIR=digi_graphs_parallel
 
 # Variables
-NEVENTS=100
-MINANGLE=30
-MAXANGLE=30
+NEVENTS=1000
+MINANGLE=25
+MAXANGLE=25
 NTHREADS=1
 
 # Digitization add or no add
@@ -71,7 +71,7 @@ if [ -d mc_learning/result ];then
 	fi
 
 	if [ -d mc_learning/result/histograms/ ];then
-		cd mc_learning/result/histograms/ 
+		cd mc_learning/result/histograms/
 		rm -fv *
 		cd -
 	else
@@ -109,7 +109,7 @@ for IT in $(seq 1 ${ITNUMBER}); do
 
 	if [ -d mc_learning/output/ ];then
 		cd mc_learning/output/
-		rm -fv *.txt
+		rm -fv *
 		cd -
 	fi
 	echo -e "\e[1m\e[32m========== Cleanup finished  === Angle( ${ANG} ) ============ \e[0m"
@@ -171,7 +171,7 @@ wait
 		grep -c -v 'test' interact_thetas.txt | root -l -b -q "../histo_draw.C(${ANG})"
 		wait
 		cp interact_thetas.txt ../result/thetats/interact_thetas_${ANG}.txt
-		cp histomram_ang*.pdf ../result/histograms/
+		cp *.pdf ../result/histograms/
            	cd -
         fi
     ####################################### Digitization #######################################

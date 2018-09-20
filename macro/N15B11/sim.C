@@ -84,7 +84,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   //Double32_t kin_energy = 0.043; // GeV
   //generator->SetPSigma(6.7835, 6.7835*0.003);
   //generator->SetKinESigma(kin_energy, 0.);
-  generator->SetKinERange(0.0427094, 0.0436017);
+  generator->SetKinERange(0.043, 0.043); // 0.0427094 : 0.0436017
   //generator->SpreadingOnTarget();
 
   //Double32_t theta = 0.;

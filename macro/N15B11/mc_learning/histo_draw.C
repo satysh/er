@@ -1,4 +1,4 @@
-void histo_draw(Double_t angle = 5.)
+void histo_draw(Double_t angle = 5., TString readFileName = "interact_thetas.txt")
 {
     Int_t anglesNumber;
 
@@ -9,7 +9,7 @@ void histo_draw(Double_t angle = 5.)
     }
     cout << "Curent angle = " << angle << ", n = " << anglesNumber << endl;
 
-    TString path = TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/N15B11/mc_learning/output/interact_thetas.txt";
+    TString path = TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/N15B11/mc_learning/output/" + readFileName;
     ifstream fin(path, ios_base::in);
     if (!fin.is_open())
     {
@@ -36,6 +36,8 @@ void histo_draw(Double_t angle = 5.)
     TCanvas* canv = new TCanvas("canv", "canv", 800, 800);
     canv->cd();
     hist->Draw();
+    hist->GetXaxis()->SetTitle("theta CM [Deg]");
+    hist->GetYaxis()->SetTitle("Number of theta");
 
     TString pathToCanv = TString(gSystem->Getenv("VMCWORKDIR")) + "/macro/N15B11/mc_learning/output";
     TString saveCanvFileName;
