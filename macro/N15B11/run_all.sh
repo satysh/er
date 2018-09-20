@@ -61,14 +61,26 @@ else
 fi
 date > ${RESULTSDIR}/out.txt
 
-if [ cd mc_learning/arhive/thetats/ ];then
-	rm -fv *
-	cd -
-fi
+if [ -d mc_learning/result ];then
+	if [ -d mc_learning/result/thetats/ ];then
+		cd mc_learning/result/thetats/
+		rm -fv *
+		cd -
+	else
+		mkdir mc_learning/result/thetats/
+	fi
 
-if [ cd mc_learning/arhive/histograms/ ];then
-	rm -fv*
-	cd -
+	if [ -d mc_learning/result/histograms/ ];then
+		cd mc_learning/result/histograms/ 
+		rm -fv *
+		cd -
+	else
+		mkdir mc_learning/result/histograms/
+	fi
+else
+	mkdir mc_learning/result
+	mkdir mc_learning/result/thetats/
+	mkdir mc_learning/result/histograms/
 fi
 #ITNUMBER=3
 for IT in $(seq 1 ${ITNUMBER}); do
@@ -158,7 +170,8 @@ wait
         	cd mc_learning/output/
 		grep -c -v 'test' interact_thetas.txt | root -l -b -q "../histo_draw.C(${ANG})"
 		wait
-		cat interact_thetas.txt > ../arhive/thetats/interact_thetas_${ANG}.txt
+		cp interact_thetas.txt ../result/thetats/interact_thetas_${ANG}.txt
+		cp histomram_ang*.pdf ../result/histograms/
            	cd -
         fi
     ####################################### Digitization #######################################
