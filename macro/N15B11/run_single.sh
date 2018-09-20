@@ -2,10 +2,10 @@
 
 OUTDIR=output
 NEVENTS=100
-ANGEL=35
+ANGEL=25
 
 cd ../../../fork_expertroot_build
-make -j16
+make -j3
 cd -
 
 echo -e "\e[1m\e[32m========== Compilation finished =========== \e[0m"

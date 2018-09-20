@@ -5,16 +5,16 @@ SIMOUTDIR=output_parallel
 RESULTSDIR=result
 COMPILATIONDIR=
 CALCOUTDIR=calc_output
-COMPILATIONDIR=../../../build
+COMPILATIONDIR=../../../fork_expertroot_build
 INDIR=../output_parallel
 OUTDIR=output_digi_parallel
 GRAPHSOUTDIR=digi_graphs_parallel
 
 # Variables
-NEVENTS=10000
+NEVENTS=100
 MINANGLE=30
 MAXANGLE=30
-NTHREADS=16
+NTHREADS=1
 
 # Digitization add or no add
 TOADDDIGI='yes'
@@ -61,6 +61,15 @@ else
 fi
 date > ${RESULTSDIR}/out.txt
 
+if [ cd mc_learning/arhive/thetats/ ];then
+	rm -fv *
+	cd -
+fi
+
+if [ cd mc_learning/arhive/histograms/ ];then
+	rm -fv*
+	cd -
+fi
 #ITNUMBER=3
 for IT in $(seq 1 ${ITNUMBER}); do
     ####################################### Simulation #######################################
@@ -85,6 +94,12 @@ for IT in $(seq 1 ${ITNUMBER}); do
 	cd ../../geometry/
 	rm -fv N15B11_detector.geo.root
 	cd -
+
+	if [ -d mc_learning/output/ ];then
+		cd mc_learning/output/
+		rm -fv *.txt
+		cd -
+	fi
 	echo -e "\e[1m\e[32m========== Cleanup finished  === Angle( ${ANG} ) ============ \e[0m"
 
 	if [ -d geo/ ]; then
@@ -138,6 +153,14 @@ for IT in $(seq 1 ${ITNUMBER}); do
 	echo "======================================" >> ${RESULTSDIR}/dPhi_info.txt
 	echo -e "\e[1m\e[32m========== All calculation finished === Angle( ${ANG} ) ========= \e[0m"
 wait
+    ####################################### MC analysis #######################################
+	if [ -d mc_learning/output/ ];then
+        	cd mc_learning/output/
+		grep -c -v 'test' interact_thetas.txt | root -l -b -q "../histo_draw.C(${ANG})"
+		wait
+		cat interact_thetas.txt > ../arhive/thetats/interact_thetas_${ANG}.txt
+           	cd -
+        fi
     ####################################### Digitization #######################################
     if [[ $TOADDDIGI = $STRING ]]
     then
@@ -180,6 +203,8 @@ wait
 cat ${RESULTSDIR}/out.txt
 echo -e "\e[1m\e[32m========== FINISHED ========= \e[0m"
 
+
+exit
 ####################################### Cross-section calculate #######################################
 wait
 
