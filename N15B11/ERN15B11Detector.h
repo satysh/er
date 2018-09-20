@@ -83,7 +83,7 @@ private:
     ExpertTrackingStatus fTrackStatus; ///< curren track stutus (transport, stop, disappeared, ...)
     TArrayI  fProcessesID;            ///< VMC prcess IDs in step
 
-
+    Bool_t Write_curent_theta();
 	ClassDef(ERN15B11Detector, 1);
 };
 

@@ -1,10 +1,10 @@
 #!/bin/bash
 
 OUTDIR=output
-NEVENTS=1000
+NEVENTS=100
 ANGEL=35
 
-cd ../../../build
+cd ../../../fork_expertroot_build
 make -j16
 cd -
 
@@ -21,6 +21,10 @@ fi
 cd ../../geometry/
 rm -fv N15B11_detector.geo.root
 cd -
+
+cd mc_learning/output/
+rm -fv *.txt
+cd -	
 echo -e "\e[1m\e[32m========== Cleanup finished  === Angle( ${ANGEL} ) ============ \e[0m"
 
 if [ -d geo/ ]; then

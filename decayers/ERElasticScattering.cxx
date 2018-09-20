@@ -23,6 +23,7 @@ TGraph* thetaCDFGr = NULL;
 TGraph* thetaInvCDFGr = NULL;
 
 //-------------------------Globals----------------------------------
+Double_t globalTheta;
 Double_t ThetaCDF(Double_t *x, Double_t *par)
 {
     return thetaCDFGr->Eval(x[0]);
@@ -133,19 +134,26 @@ Bool_t ERElasticScattering::Init()
         fCDFminTargetIon = fThetaCDF->Eval(fThetaTargetIon1);
         fCDFmaxTargetIon = fThetaCDF->Eval(fThetaTargetIon2);
     }
+
     return kTRUE;
 }
 
 Bool_t ERElasticScattering::Stepping()
 {
+/*
+    LOG(INFO) << "ERElasticScattering::Stepping " << gMC->CurrentVolName() << FairLogger::endl;
+    LOG(INFO) << "fDecayFinish: " << fDecayFinish << FairLogger::endl;
+    LOG(INFO) << "TrackPid: " << gMC->TrackPid() << ", PdgCode: " << fInputIonPDG->PdgCode() << FairLogger::endl;
+*/
     if (!fDecayFinish && gMC->TrackPid() == fInputIonPDG->PdgCode() && TString(gMC->CurrentVolName()).Contains(fVolumeName))
     {
-        gMC->SetMaxStep(fStep);
         TLorentzVector curPos;
         gMC->TrackPosition(curPos);
-        //fDecayPosZ = -0.0007;
-        if (curPos.Z() > fDecayPosZ)
+        LOG(INFO) << "curPos.Z = " << curPos.Z() << FairLogger::endl;
+        //fDecayPosZ = 0.;
+        if (curPos.Z() >= 0.)
         {
+            gMC->SetMaxStep(fStep);
             TLorentzVector fInputIonV;
             gMC->TrackMomentum(fInputIonV);
             Double_t iM = GetIonMass();
@@ -185,8 +193,9 @@ Bool_t ERElasticScattering::Stepping()
 
 
             Double_t theta = ThetaGen();
-            Double_t phi = fRnd->Uniform(fPhi1, fPhi2);
-
+            Double_t phi = 0.*fRnd->Uniform(fPhi1, fPhi2);
+            Write_curent_theta(theta*RadToDeg());
+            LOG(INFO) << "Theta: " << theta*RadToDeg() << FairLogger::endl;
             // In case of target ion registration
             if (theta > fTheta2*DegToRad() || theta < fTheta1*DegToRad())
             {
@@ -225,8 +234,8 @@ Bool_t ERElasticScattering::Stepping()
             phi = cmV.Phi();
             LOG(DEBUG) << "  Rotation angles: theta = " << theta*RadToDeg() << ", Phi = " << phi*RadToDeg() << FairLogger::endl;
 
-            //out1V.Boost(cmV.BoostVector());
-            //out2V.Boost(cmV.BoostVector());
+            out1V.Boost(cmV.BoostVector());
+            out2V.Boost(cmV.BoostVector());
 /*
             // we use second case
             out1V.RotateY(theta);
@@ -237,7 +246,7 @@ Bool_t ERElasticScattering::Stepping()
             out2V.RotateZ(phi);
             out2V.Boost(cmV.BoostVector());
 */
-
+/*
             // third case
             out1V.RotateZ(-phi);
             out1V.RotateY(theta);
@@ -248,7 +257,7 @@ Bool_t ERElasticScattering::Stepping()
             out2V.RotateY(theta);
             out2V.RotateZ(phi);
             out2V.Boost(cmV.BoostVector());
-
+*/
             LOG(DEBUG) << "AFTER BOOST=======================================================" << FairLogger::endl;
             LOG(DEBUG) << "  Lab theta primary ion = " << out1V.Theta()*RadToDeg() << " phi = " << out1V.Phi()*RadToDeg() << FairLogger::endl;
             LOG(DEBUG) << "  Lab out1 T = "<< sqrt(pow(out1V.P(),2)+iM2) - iM <<  FairLogger::endl;
@@ -330,10 +339,11 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
     else
         thetaCMIon = 2.*radAngle;
 
+    globalTheta = thetaCMIon;
     Double_t thetaCMTargetIon;
     thetaCMTargetIon = 180. - 2*fDetPos;
-    fTheta1 = thetaCMIon*RadToDeg() - 0.652;
-    fTheta2 = thetaCMIon*RadToDeg() + 0.652;
+    fTheta1 = thetaCMIon*RadToDeg() - 2.;
+    fTheta2 = thetaCMIon*RadToDeg() + 2.;
 
     fThetaTargetIon1 = thetaCMTargetIon - 0.521;
     fThetaTargetIon2 = thetaCMTargetIon + 0.521;
@@ -342,5 +352,21 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
     fPhi2 = 0.1055/*asin( 2./218./sin(radAngle) )*/;
 }
 
+Bool_t ERElasticScattering::Write_curent_theta(Double_t theta)
+{
+    LOG(INFO) << "ERElasticScattering::Write_curent_theta(" << theta << ")" << FairLogger::endl;
+    std::ofstream fout("mc_learning/output/cur_theta.txt", std::ios_base::out);
+    if (!fout.is_open())
+    {
+        std::cerr << "ERElasticScattering::Write_curent_theta" << std::endl;
+        std::cerr << "mc_learning/output/cur_theta.txt isn't open" << std::endl;
+        return kFALSE;
+    }
+    if (theta != 0.)
+        fout << theta << std::endl;
+    fout.clear();
+    fout.close();
+    return kTRUE;
+}
 
 ClassImp(ERElasticScattering)

@@ -45,9 +45,11 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   collimator->SetGeometryFileName("N15.collimator.root");
   run->AddModule(collimator);
 
+/*
   ERDetector* target = new ERTarget("N15B11_target", kTRUE, 1);
   target->SetGeometryFileName("N15.target.root");
   run->AddModule(target);
+*/
 
   FairDetector* detector = new ERN15B11Detector("N15B11detector", kTRUE);
   detector->SetGeometryFileName("N15B11_detector.geo.root");
@@ -67,7 +69,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   scattering->SetThetaCDF("cos_tetta_cross.txt");
   scattering->SetUniformPos(-0.00035,0.00035);
   scattering->SetStep(0.00001); //0.1 micron
-  scattering->SetDecayVolume("targetB11");
+  scattering->SetDecayVolume("cave");
   scattering->SetDetAngle(angle); // argumetn is an angle of detector position in Lab
   //scattering->SetThetaRange(18.4, 19.4);
   //scattering->SetPhiRange(0., 0.);
@@ -89,8 +91,8 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   //Double32_t sigmaTheta = 0.004*TMath::RadToDeg();
   //generator->SetThetaSigma(0., 0.);
 
-  generator->SetThetaRange(-2., 2.); // -2 : 2
-  generator->SetPhiRange(0., 360.); // 0 : 360
+  generator->SetThetaRange(0., 0.); // -2 : 2
+  generator->SetPhiRange(0., 0.); // 0 : 360
 
   Double32_t distanceToTarget = 50.;
   Double32_t sigmaOnTarget = 0.;
@@ -111,7 +113,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
 
   //-------Set LOG verbosity  -----------------------------------------------
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
-  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
+  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
 
   //------- Initialize simulation run ---------------------------------------
   run->Init();

@@ -6,6 +6,10 @@
 #include <TVirtualMC.h>
 #include <TGeoManager.h>
 #include <TRefArray.h>
+#include <TMath.h>
+
+using TMath::DegToRad;
+using TMath::RadToDeg;
 
 // FairRoot
 //#include <FairRun.h>
@@ -18,6 +22,7 @@
 #include "cppTokenizer.h"
 #include "ERPoint.h"
 
+Bool_t tester = kFALSE;
 /*static*/
 struct stcNodeSig ERN15B11Detector::mCurNodeSig;
 
@@ -124,6 +129,7 @@ void ERN15B11Detector::EndOfEvent()
 {
 	LOG(DEBUG) << "ERN15B11Detector::EndOfEvent" << FairLogger::endl;
 	this->Reset();
+	tester = kFALSE;
 }
 
 void ERN15B11Detector::Register()
@@ -199,7 +205,6 @@ TClonesArray* ERN15B11Detector::GetCollection(Int_t iColl) const
 void ERN15B11Detector::Reset()
 {
 	LOG(DEBUG) << "ERN15B11Detector::Reset" << FairLogger::endl;
-
 	std::map<Int_t, TClonesArray*>::iterator iter;
 
 	for (iter = mOutputPoints.begin(); iter != mOutputPoints.end(); ++iter) {
@@ -311,6 +316,12 @@ void ERN15B11Detector::StartNewPoint(void)
 	fPosIn.Vect().GetXYZ(globalPos);
 	matrix.MasterToLocal(globalPos, localPos);
 	fPosInLocal.SetXYZ(localPos[0], localPos[1], localPos[2]);
+
+	if (!tester)
+	{
+		Write_curent_theta();
+		tester = kTRUE;
+	}
 }
 
 void ERN15B11Detector::FinishNewPoint(TClonesArray* p_collection)
@@ -338,4 +349,31 @@ ERPoint* ERN15B11Detector::AddPoint(TClonesArray* p_collection)
 		fTimeOut, fTrackLength, fELoss, 0., gMC->TrackPid(), gMC->TrackCharge());
 }
 
+Bool_t ERN15B11Detector::Write_curent_theta()
+{
+    std::ifstream fin("mc_learning/output/cur_theta.txt", std::ios_base::in);
+    if (!fin.is_open())
+    {
+    	std::cerr << "ERN15B11Detector::Write_curent_theta" << std::endl;
+        std::cerr << "mc_learning/output/cur_theta.txt isn't open" << std::endl;
+        return kFALSE;
+    }
+    Double_t theta;
+    fin >> theta;
+	std::cout << "ERN15B11Detector::Write_curent_theta: " << theta << std::endl;
+	fin.clear();
+	fin.close();
+
+    std::ofstream fout("mc_learning/output/interact_thetas.txt", std::ios_base::app);
+    if (!fout.is_open())
+    {
+    	std::cerr << "ERN15B11Detector::Write_curent_theta" << std::endl;
+        std::cerr << "mc_learning/output/interact_thetas.txt isn't open" << std::endl;
+        return kFALSE;
+    }
+    fout << theta << std::endl;
+    fout.clear();
+    fout.close();
+    return kTRUE;
+}
 ClassImp(ERN15B11Detector)
