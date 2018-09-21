@@ -1,4 +1,12 @@
 #!/bin/bash
+STAANGLE=5
+ENDANGLE=6
 
-grep -c -v output/test interact_thetas.txt | root -l -b -q histo_draw.C
+cd result
+rm -fv *.root
+cd -
+rm -fv err.txt
 
+root -l -b -q "thetas_writer.C(${STAANGLE}, ${ENDANGLE})" 
+wait
+root -l result/*.root

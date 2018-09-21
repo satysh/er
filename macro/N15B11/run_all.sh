@@ -12,8 +12,8 @@ GRAPHSOUTDIR=digi_graphs_parallel
 
 # Variables
 NEVENTS=1000
-MINANGLE=25
-MAXANGLE=25
+MINANGLE=5
+MAXANGLE=7
 NTHREADS=1
 
 # Digitization add or no add
@@ -62,12 +62,15 @@ fi
 date > ${RESULTSDIR}/out.txt
 
 if [ -d mc_learning/result ];then
-	if [ -d mc_learning/result/thetats/ ];then
-		cd mc_learning/result/thetats/
+	cd mc_learning/result
+	rm -fv *.root
+	cd -
+	if [ -d mc_learning/result/thetas/ ];then
+		cd mc_learning/result/thetas/
 		rm -fv *
 		cd -
 	else
-		mkdir mc_learning/result/thetats/
+		mkdir mc_learning/result/thetas/
 	fi
 
 	if [ -d mc_learning/result/histograms/ ];then
@@ -79,7 +82,7 @@ if [ -d mc_learning/result ];then
 	fi
 else
 	mkdir mc_learning/result
-	mkdir mc_learning/result/thetats/
+	mkdir mc_learning/result/thetas/
 	mkdir mc_learning/result/histograms/
 fi
 #ITNUMBER=3
@@ -168,10 +171,7 @@ wait
     ####################################### MC analysis #######################################
 	if [ -d mc_learning/output/ ];then
         	cd mc_learning/output/
-		grep -c -v 'test' interact_thetas.txt | root -l -b -q "../histo_draw.C(${ANG})"
-		wait
-		cp interact_thetas.txt ../result/thetats/interact_thetas_${ANG}.txt
-		cp *.pdf ../result/histograms/
+		cp interact_thetas.txt ../result/thetas/interact_thetas_${ANG}.txt
            	cd -
         fi
     ####################################### Digitization #######################################
