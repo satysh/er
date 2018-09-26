@@ -5,16 +5,16 @@ SIMOUTDIR=output_parallel
 RESULTSDIR=result
 COMPILATIONDIR=
 CALCOUTDIR=calc_output
-COMPILATIONDIR=../../../fork_expertroot_build
+COMPILATIONDIR=../../../build
 INDIR=../output_parallel
 OUTDIR=output_digi_parallel
 GRAPHSOUTDIR=digi_graphs_parallel
 
 # Variables
-NEVENTS=1000
-MINANGLE=28
-MAXANGLE=28
-NTHREADS=3
+NEVENTS=10000
+MINANGLE=5
+MAXANGLE=5
+NTHREADS=16
 
 # Digitization add or no add
 TOADDDIGI='yes'
@@ -171,7 +171,9 @@ for IT in $(seq 1 ${ITNUMBER}); do
     ####################################### MC analysis #######################################
 	if [ -d mc_learning/output/ ];then
         	cd mc_learning/output/
-		    cat interact_thetas_[0-32].txt >> ../result/thetas/interact_thetas_${ANG}.txt
+		for THR in $(seq 1 ${NTHREADS});do
+		    cat interact_thetas_${THR}.txt >> ../result/thetas/interact_thetas_${ANG}.txt
+		done
            	cd -
         fi
     ####################################### Digitization #######################################
