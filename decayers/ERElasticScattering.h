@@ -12,7 +12,7 @@ class TParticlePDG;
 class ERElasticScattering : public ERDecay
 {
 public:
-    ERElasticScattering(TString name);
+    ERElasticScattering(TString name, Int_t run_index = 0);
     ~ERElasticScattering();
 
     void SetTargetIon(Int_t A, Int_t Z, Int_t Q);
@@ -58,6 +58,7 @@ protected:
     Double_t        fCDFRangesSum;        // The CDF ranges summ of the primary ion and target ion
 
     Int_t           fInteractNumInTarget; // Interaction counter for target
+    Int_t           fRunIndex;
 
     Bool_t ionMassTrueOrFalseTester;      // It's to identify a difference between the PDG and Monte-Carlo ion mass
 

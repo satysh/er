@@ -12,9 +12,9 @@ GRAPHSOUTDIR=digi_graphs_parallel
 
 # Variables
 NEVENTS=1000
-MINANGLE=5
-MAXANGLE=7
-NTHREADS=1
+MINANGLE=28
+MAXANGLE=28
+NTHREADS=3
 
 # Digitization add or no add
 TOADDDIGI='yes'
@@ -167,11 +167,11 @@ for IT in $(seq 1 ${ITNUMBER}); do
 
 	echo "======================================" >> ${RESULTSDIR}/dPhi_info.txt
 	echo -e "\e[1m\e[32m========== All calculation finished === Angle( ${ANG} ) ========= \e[0m"
-wait
+    wait
     ####################################### MC analysis #######################################
 	if [ -d mc_learning/output/ ];then
         	cd mc_learning/output/
-		cp interact_thetas.txt ../result/thetas/interact_thetas_${ANG}.txt
+		    cat interact_thetas_[0-32].txt >> ../result/thetas/interact_thetas_${ANG}.txt
            	cd -
         fi
     ####################################### Digitization #######################################

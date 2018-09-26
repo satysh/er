@@ -27,7 +27,7 @@ class ERN15B11Detector : public FairDetector
 {
 public:
 	ERN15B11Detector();
-	ERN15B11Detector(const char* Name, Bool_t Active, Int_t DetId = 0);
+	ERN15B11Detector(const char* Name, Bool_t Active, Int_t DetId = 0, Int_t run_index = 0);
 	virtual ~ERN15B11Detector();
 
 	virtual void ConstructGeometry();
@@ -82,6 +82,8 @@ private:
     Int_t          fVolNb;          ///< number of fiber in pixel
     ExpertTrackingStatus fTrackStatus; ///< curren track stutus (transport, stop, disappeared, ...)
     TArrayI  fProcessesID;            ///< VMC prcess IDs in step
+
+    Int_t       fRunIndex;
 
     Bool_t Write_curent_theta();
 	ClassDef(ERN15B11Detector, 1);

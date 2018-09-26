@@ -35,10 +35,11 @@ ERN15B11Detector::ERN15B11Detector() :
 	LOG(DEBUG) << "ERN15B11Detector::ERN15B11Detector()" << FairLogger::endl;
 }
 
-ERN15B11Detector::ERN15B11Detector(const char* Name, Bool_t Active, Int_t DetId) :
-	FairDetector(Name, Active, DetId)
+ERN15B11Detector::ERN15B11Detector(const char* Name, Bool_t Active, Int_t DetId, Int_t run_index) :
+	FairDetector(Name, Active, DetId),
+	fRunIndex(run_index)
 {
-	LOG(DEBUG) << "ERN15B11Detector::ERN15B11Detector(" << Name << ")" << FairLogger::endl;
+	std::cerr << "ERN15B11Detector::ERN15B11Detector(" << Name << ", " << DetId << ", " << fRunIndex << ")" << std::endl;
 }
 
 ERN15B11Detector::~ERN15B11Detector()
@@ -351,11 +352,13 @@ ERPoint* ERN15B11Detector::AddPoint(TClonesArray* p_collection)
 
 Bool_t ERN15B11Detector::Write_curent_theta()
 {
-    std::ifstream fin("mc_learning/output/cur_theta.txt", std::ios_base::in);
+    TString finFileName;
+    finFileName.Form("mc_learning/output/cur_theta_%d.txt", fRunIndex);
+    std::ifstream fin(finFileName, std::ios_base::in);
     if (!fin.is_open())
     {
     	std::cerr << "ERN15B11Detector::Write_curent_theta" << std::endl;
-        std::cerr << "mc_learning/output/cur_theta.txt isn't open" << std::endl;
+        std::cerr << "mc_learning/output/cur_theta_" << fRunIndex << ".txt isn't open" << std::endl;
         return kFALSE;
     }
     Double_t theta;
@@ -364,11 +367,13 @@ Bool_t ERN15B11Detector::Write_curent_theta()
 	fin.clear();
 	fin.close();
 
-    std::ofstream fout("mc_learning/output/interact_thetas.txt", std::ios_base::app);
+	TString outFileName;
+	outFileName.Form("mc_learning/output/interact_thetas_%d.txt", fRunIndex);
+    std::ofstream fout(outFileName, std::ios_base::app);
     if (!fout.is_open())
     {
     	std::cerr << "ERN15B11Detector::Write_curent_theta" << std::endl;
-        std::cerr << "mc_learning/output/interact_thetas.txt isn't open" << std::endl;
+        std::cerr << "mc_learning/output/interact_thetas_" << fRunIndex << ".txt isn't open" << std::endl;
         return kFALSE;
     }
     fout << theta << std::endl;

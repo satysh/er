@@ -35,7 +35,7 @@ Double_t ThetaInvCDF(Double_t *x, Double_t *par)
 }
 //------------------------------------------------------------------
 
-ERElasticScattering::ERElasticScattering(TString name):
+ERElasticScattering::ERElasticScattering(TString name, Int_t run_index):
     ERDecay(name),
     fThetaFileName(""),
     fTheta1(0.),
@@ -55,7 +55,8 @@ ERElasticScattering::ERElasticScattering(TString name):
     fIonMass(0.),
     fInteractNumInTarget(0),
     fCDFRangesSum(0.),
-    ionMassTrueOrFalseTester(kFALSE)
+    ionMassTrueOrFalseTester(kFALSE),
+    fRunIndex(run_index)
 {
 }
 
@@ -295,7 +296,7 @@ Double_t ERElasticScattering::ThetaGen()
     else
     {
         Double_t dF1 = fabs(fCDFmax-fCDFmin);
-        Double_t dF2 = 0.*fabs(fCDFmaxTargetIon-fCDFminTargetIon);
+        Double_t dF2 = fabs(fCDFmaxTargetIon-fCDFminTargetIon);
         Double_t dLength = dF1 + dF2;
 /*
         std::cout.precision(12);
@@ -355,7 +356,9 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
 Bool_t ERElasticScattering::Write_curent_theta(Double_t theta)
 {
     LOG(INFO) << "ERElasticScattering::Write_curent_theta(" << theta << ")" << FairLogger::endl;
-    std::ofstream fout("mc_learning/output/cur_theta.txt", std::ios_base::out);
+    TString fileName;
+    fileName.Form("mc_learning/output/cur_theta_%d.txt", fRunIndex);
+    std::ofstream fout(fileName, std::ios_base::out);
     if (!fout.is_open())
     {
         std::cerr << "ERElasticScattering::Write_curent_theta" << std::endl;
