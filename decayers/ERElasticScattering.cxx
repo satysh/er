@@ -148,16 +148,12 @@ Bool_t ERElasticScattering::Stepping()
 */
     if (!fDecayFinish && gMC->TrackPid() == fInputIonPDG->PdgCode() && TString(gMC->CurrentVolName()).Contains(fVolumeName))
     {
+        gMC->SetMaxStep(fStep);
         TLorentzVector curPos;
         gMC->TrackPosition(curPos);
-        LOG(INFO) << "curPos.Z = " << curPos.Z() << FairLogger::endl;
-        LOG(INFO) << "fDecayPosZ = " << fDecayPosZ << FairLogger::endl;
         //fDecayPosZ = 0.;
-        if (curPos.Z() > fDecayPosZ)
+        if (curPos.Z() >= fDecayPosZ)
         {
-            LOG(INFO) << "inside curPos.Z = " << curPos.Z() << FairLogger::endl;
-            LOG(INFO) << "inside fDecayPosZ = " << fDecayPosZ << FairLogger::endl;
-            gMC->SetMaxStep(fStep);
             TLorentzVector fInputIonV;
             gMC->TrackMomentum(fInputIonV);
             Double_t iM = GetIonMass();
