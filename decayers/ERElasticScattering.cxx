@@ -151,9 +151,12 @@ Bool_t ERElasticScattering::Stepping()
         TLorentzVector curPos;
         gMC->TrackPosition(curPos);
         LOG(INFO) << "curPos.Z = " << curPos.Z() << FairLogger::endl;
+        LOG(INFO) << "fDecayPosZ = " << fDecayPosZ << FairLogger::endl;
         //fDecayPosZ = 0.;
-        if (curPos.Z() >= fDecayPosZ)
+        if (curPos.Z() > fDecayPosZ)
         {
+            LOG(INFO) << "inside curPos.Z = " << curPos.Z() << FairLogger::endl;
+            LOG(INFO) << "inside fDecayPosZ = " << fDecayPosZ << FairLogger::endl;
             gMC->SetMaxStep(fStep);
             TLorentzVector fInputIonV;
             gMC->TrackMomentum(fInputIonV);
@@ -294,7 +297,7 @@ Double_t ERElasticScattering::ThetaGen()
     }
     else
     {
-        Double_t dF1 = 0.*fabs(fCDFmax-fCDFmin);
+        Double_t dF1 = fabs(fCDFmax-fCDFmin);
         Double_t dF2 = fabs(fCDFmaxTargetIon-fCDFminTargetIon);
         Double_t dLength = dF1 + dF2;
 /*

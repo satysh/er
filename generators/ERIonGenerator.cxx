@@ -1,8 +1,8 @@
 /********************************************************************************
  *              Copyright (C) Joint Institute for Nuclear Research              *
  *                                                                              *
- *              This software is distributed under the terms of the             * 
- *         GNU Lesser General Public Licence version 3 (LGPL) version 3,        *  
+ *              This software is distributed under the terms of the             *
+ *         GNU Lesser General Public Licence version 3 (LGPL) version 3,        *
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
 #include "ERIonGenerator.h"
@@ -27,7 +27,7 @@ ERIonGenerator::ERIonGenerator()
    fIon(NULL),  fQ(0)
 {
 //  LOG(WARNING) << "ERIonGenerator: "
-//               << " Please do not use the default constructor! " 
+//               << " Please do not use the default constructor! "
 //               << FairLogger::endl;
 }
 //-------------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ ERIonGenerator::ERIonGenerator(const Char_t* ionName, Int_t mult)
     }
   }
   if(fIon==0 && part==0 ) {
-    LOG(FATAL) << "Ion or Particle is not defined !" 
+    LOG(FATAL) << "Ion or Particle is not defined !"
 	       << FairLogger::endl;
   }
   SetPhiRange();
@@ -64,13 +64,13 @@ ERIonGenerator::ERIonGenerator(TString name, Int_t z, Int_t a, Int_t q, Int_t mu
   fPDGType(-1),fMult(mult),fPtMin(0),fPtMax(0),
   fPhiMin(0),fPhiMax(0),fEtaMin(0),fEtaMax(0),fYMin(0),fYMax(0),
   fPMin(0),fPMax(0),fThetaMin(0),fThetaMax(0),fX(0),fY(0),fZ(0),
-  fX1(0),fY1(0),fX2(0),fY2(0), 
+  fX1(0),fY1(0),fX2(0),fY2(0),
   fGausX(0), fGausY(0), fGausP(0),
   fSigmaX(0), fSigmaY(0), fSigmaPIsSet(0),
-  fSigmaP(0), 
+  fSigmaP(0),
   fEtaRangeIsSet(0), fYRangeIsSet(0),fThetaRangeIsSet(0),
   fCosThetaIsSet(0), fPtRangeIsSet(0), fPRangeIsSet(0),
-  fPointVtxIsSet(0),fBoxVtxIsSet(0),fIon(NULL), fName(name), 
+  fPointVtxIsSet(0),fBoxVtxIsSet(0),fIon(NULL), fName(name),
   fBoxSigmaIsSet(0), fSpreadingOnTarget(0),
   fGausTheta(0), fSigmaTheta(0), fSigmaThetaIsSet(0),
   fKinE(0)
@@ -81,7 +81,7 @@ ERIonGenerator::ERIonGenerator(TString name, Int_t z, Int_t a, Int_t q, Int_t mu
   fIonMass = fIonTable->GetIonMass(z,a)/1000.;
   FairRunSim* run = FairRunSim::Instance();
   if ( ! run ) {
-    LOG(ERROR) << "No FairRunSim instantised!" 
+    LOG(ERROR) << "No FairRunSim instantised!"
 	       << FairLogger::endl;
   } else {
     run->AddNewIon(fIon);
@@ -100,22 +100,22 @@ void ERIonGenerator::SetExcitationEnergy(Double_t eExc)
 }
 //-------------------------------------------------------------------------------------------------
 void ERIonGenerator::SetKinERange(Double32_t kinEMin, Double32_t kinEMax)
-{ 
+{
   fPMin = TMath::Sqrt(kinEMin*kinEMin + 2.*kinEMin*fIonMass);
   fPMax = TMath::Sqrt(kinEMax*kinEMax + 2.*kinEMax*fIonMass);
   fPRangeIsSet=kTRUE;
 }
 //-------------------------------------------------------------------------------------------------
 void ERIonGenerator::SetKinESigma(Double32_t kinE, Double32_t sigmaKinE)
-{ 
+{
   fGausP = TMath::Sqrt(kinE*kinE + 2.*kinE*fIonMass);
   fSigmaP = sigmaKinE*(kinE + fIonMass) / TMath::Sqrt(kinE*kinE + 2.*kinE*fIonMass);
-  fSigmaPIsSet=kTRUE; 
+  fSigmaPIsSet=kTRUE;
 }
 //-------------------------------------------------------------------------------------------------
-void ERIonGenerator::SetKinE(Double32_t kinE) 
+void ERIonGenerator::SetKinE(Double32_t kinE)
 {
-  fGausP = TMath::Sqrt(kinE*kinE + 2.*kinE*fIonMass); 
+  fGausP = TMath::Sqrt(kinE*kinE + 2.*kinE*fIonMass);
 }
 //-------------------------------------------------------------------------------------------------
 Bool_t ERIonGenerator::ReadEvent(FairPrimaryGenerator* primGen)
@@ -135,7 +135,7 @@ Bool_t ERIonGenerator::ReadEvent(FairPrimaryGenerator* primGen)
     int pdgType = thisPart->PdgCode();
 
     LOG(DEBUG) << "ERIonGenerator: Generating " << fMult << " ions of type "
-        << fIon->GetName() << " (PDG code " << pdgType << ")" 
+        << fIon->GetName() << " (PDG code " << pdgType << ")"
         << FairLogger::endl;
     LOG(DEBUG) << "    Momentum (" << fPx << ", " << fPy << ", " << fPz
         << ") Gev from vertex (" << fX << ", " << fY
@@ -148,24 +148,37 @@ Bool_t ERIonGenerator::ReadEvent(FairPrimaryGenerator* primGen)
 //-------------------------------------------------------------------------------------------------
 void ERIonGenerator::SpreadingParameters()
 {
-  Double32_t pabs=0, phi, pt=0, theta=0, eta, y, mt, kinE; 
+  Double32_t pabs=0, phi, pt=0, theta=0, eta, y, mt, kinE;
 
   fPz=0;
 
   phi = gRandom->Uniform(fPhiMin,fPhiMax) * TMath::DegToRad();
 
-  if (fPRangeIsSet ) { 
-    pabs = gRandom->Uniform(fPMin,fPMax); 
+  if (fPRangeIsSet ) {
+    pabs = gRandom->Uniform(fPMin,fPMax);
   }
-  else if (fPtRangeIsSet) { 
-    pt   = gRandom->Uniform(fPtMin,fPtMax); 
+  else if (fPtRangeIsSet) {
+    pt   = gRandom->Uniform(fPtMin,fPtMax);
   }
-  if (fSigmaPIsSet) { 
-    pabs = gRandom->Gaus(fGausP,fSigmaP); 
+  if (fSigmaPIsSet) {
+    pabs = gRandom->Gaus(fGausP,fSigmaP);
     fPRangeIsSet = kTRUE;
   }
-  if(fSigmaThetaIsSet) { 
-    theta = gRandom->Gaus(fGausTheta,fSigmaTheta) * TMath::DegToRad(); 
+  if(fSigmaThetaIsSet) {
+    /*
+    Int_t i = 0;
+    Double32_t memTheta = 0.;
+    */
+    do {
+      theta = gRandom->Gaus(fGausTheta,fSigmaTheta) * TMath::DegToRad();
+      /*
+      if (i > 0)
+        std::cerr << "hoooop, theta = " << memTheta*1000 << " mrad" << std::endl;
+      else
+        std::cerr << i++ << ", theta = " << theta*1000 << " mrad" << std::endl;
+      memTheta = theta;
+      */
+    }while(theta < -20e-3 || theta > 20e-3);
   }
   if (fThetaRangeIsSet) {
     if (fCosThetaIsSet)
@@ -206,13 +219,13 @@ void ERIonGenerator::SpreadingParameters()
   }
   if(fSpreadingOnTarget) {
     // Recontruction of beam start position
-    LOG(DEBUG) << "Coord on target x = " << fX << "; y = " << fY 
+    LOG(DEBUG) << "Coord on target x = " << fX << "; y = " << fY
                << "; theta = " << theta << FairLogger::endl;
     Double_t l = fZ / TMath::Cos(theta);
     fX = l * TMath::Sin(theta) * TMath::Cos(phi) + fX;
     fY = l * TMath::Sin(theta) * TMath::Sin(phi) + fY;
-    LOG(DEBUG) << "Coord on start x = " << fX << "; y = " << fY 
-               << "; theta = " << theta << FairLogger::endl; 
+    LOG(DEBUG) << "Coord on start x = " << fX << "; y = " << fY
+               << "; theta = " << theta << FairLogger::endl;
   }
 }
 //-------------------------------------------------------------------------------------------------
