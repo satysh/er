@@ -152,7 +152,7 @@ Bool_t ERElasticScattering::Stepping()
         gMC->TrackPosition(curPos);
         LOG(INFO) << "curPos.Z = " << curPos.Z() << FairLogger::endl;
         //fDecayPosZ = 0.;
-        if (curPos.Z() >= 0.)
+        if (curPos.Z() >= fDecayPosZ)
         {
             gMC->SetMaxStep(fStep);
             TLorentzVector fInputIonV;
@@ -194,7 +194,7 @@ Bool_t ERElasticScattering::Stepping()
 
 
             Double_t theta = ThetaGen();
-            Double_t phi = 0.*fRnd->Uniform(fPhi1, fPhi2);
+            Double_t phi = fRnd->Uniform(fPhi1, fPhi2);
             Write_curent_theta(theta*RadToDeg());
             LOG(INFO) << "Theta: " << theta*RadToDeg() << FairLogger::endl;
             // In case of target ion registration
@@ -235,8 +235,8 @@ Bool_t ERElasticScattering::Stepping()
             phi = cmV.Phi();
             LOG(DEBUG) << "  Rotation angles: theta = " << theta*RadToDeg() << ", Phi = " << phi*RadToDeg() << FairLogger::endl;
 
-            out1V.Boost(cmV.BoostVector());
-            out2V.Boost(cmV.BoostVector());
+            //out1V.Boost(cmV.BoostVector());
+            //out2V.Boost(cmV.BoostVector());
 /*
             // we use second case
             out1V.RotateY(theta);
@@ -247,7 +247,6 @@ Bool_t ERElasticScattering::Stepping()
             out2V.RotateZ(phi);
             out2V.Boost(cmV.BoostVector());
 */
-/*
             // third case
             out1V.RotateZ(-phi);
             out1V.RotateY(theta);
@@ -258,7 +257,7 @@ Bool_t ERElasticScattering::Stepping()
             out2V.RotateY(theta);
             out2V.RotateZ(phi);
             out2V.Boost(cmV.BoostVector());
-*/
+
             LOG(DEBUG) << "AFTER BOOST=======================================================" << FairLogger::endl;
             LOG(DEBUG) << "  Lab theta primary ion = " << out1V.Theta()*RadToDeg() << " phi = " << out1V.Phi()*RadToDeg() << FairLogger::endl;
             LOG(DEBUG) << "  Lab out1 T = "<< sqrt(pow(out1V.P(),2)+iM2) - iM <<  FairLogger::endl;
@@ -295,8 +294,8 @@ Double_t ERElasticScattering::ThetaGen()
     }
     else
     {
-        Double_t dF1 = fabs(fCDFmax-fCDFmin);
-        Double_t dF2 = 0.*fabs(fCDFmaxTargetIon-fCDFminTargetIon);
+        Double_t dF1 = 0.*fabs(fCDFmax-fCDFmin);
+        Double_t dF2 = fabs(fCDFmaxTargetIon-fCDFminTargetIon);
         Double_t dLength = dF1 + dF2;
 /*
         std::cout.precision(12);
@@ -346,11 +345,11 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
     fTheta1 = thetaCMIon*RadToDeg() - 2.;
     fTheta2 = thetaCMIon*RadToDeg() + 2.;
 
-    fThetaTargetIon1 = thetaCMTargetIon - 0.521;
-    fThetaTargetIon2 = thetaCMTargetIon + 0.521;
+    fThetaTargetIon1 = thetaCMTargetIon - 2.;
+    fThetaTargetIon2 = thetaCMTargetIon + 2.;
 
-    fPhi1 = -0.1055/*-asin( 2./218./sin(radAngle) )*/;
-    fPhi2 = 0.1055/*asin( 2./218./sin(radAngle) )*/;
+    fPhi1 = -6.*DegToRad()/*-asin( 2./218./sin(radAngle) )*/;
+    fPhi2 = 6.*DegToRad()/*asin( 2./218./sin(radAngle) )*/;
 }
 
 Bool_t ERElasticScattering::Write_curent_theta(Double_t theta)

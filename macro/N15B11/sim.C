@@ -45,11 +45,9 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   collimator->SetGeometryFileName("N15.collimator.root");
   run->AddModule(collimator);
 
-/*
   ERDetector* target = new ERTarget("N15B11_target", kTRUE, 1);
   target->SetGeometryFileName("N15.target.root");
   run->AddModule(target);
-*/
 
   FairDetector* detector = new ERN15B11Detector("N15B11detector", kTRUE, 1, index);
   detector->SetGeometryFileName("N15B11_detector.geo.root");
@@ -69,7 +67,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   scattering->SetThetaCDF("cos_tetta_cross.txt");
   scattering->SetUniformPos(-0.00035,0.00035);
   scattering->SetStep(0.00001); //0.1 micron
-  scattering->SetDecayVolume("cave");
+  scattering->SetDecayVolume("targetB11"); //targetB11
   scattering->SetDetAngle(angle); // argumetn is an angle of detector position in Lab
   //scattering->SetThetaRange(18.4, 19.4);
   //scattering->SetPhiRange(0., 0.);
@@ -84,7 +82,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   //Double32_t kin_energy = 0.043; // GeV
   //generator->SetPSigma(6.7835, 6.7835*0.003);
   //generator->SetKinESigma(kin_energy, 0.);
-  generator->SetKinERange(0.043, 0.043); // 0.0427094 : 0.0436017
+  generator->SetKinERange(0.0427094, 0.0436017); // 0.0427094 : 0.0436017
   //generator->SpreadingOnTarget();
 
   //Double32_t theta = 0.;
@@ -109,7 +107,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   // ------------------------------------------------------------------------
 
   //-------Set visualisation flag to true------------------------------------
-  run->SetStoreTraj(kTRUE);
+  run->SetStoreTraj(kFALSE);
 
   //-------Set LOG verbosity  -----------------------------------------------
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
