@@ -1,5 +1,3 @@
-using TMath::RadToDeg;
-using TMath::DegToRad;
 void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t angle = 20.)
 {
   gRandom->SetSeed(index);
@@ -86,16 +84,15 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   //generator->SetKinESigma(kin_energy, 0.);
   generator->SetKinERange(0.0427094, 0.0436017); // 0.0427094 : 0.0436017
   //generator->SpreadingOnTarget();
+/*
+  Double32_t theta = 0.;
+  Double32_t sigmaTheta = 5e-3*TMath::RadToDeg();
+  generator->SetThetaSigma(theta, sigmaTheta); // theta = 0., sigma = 5 mrad
+*/
+  generator->SetThetaRange(0., 0.); // -2 : 2
+  generator->SetPhiRange(0., 0.); // 0 : 180
 
-  //Double32_t theta = 0.;
-  //Double32_t sigmaTheta = 0.004*TMath::RadToDeg();
-  //generator->SetThetaSigma(0., 0.);
-
-  //generator->SetThetaRange(-20e-3*RadToDeg(), 20e-3*RadToDeg()); // -2 : 2
-  generator->SetThetaSigma(0., 5e-3*RadToDeg()); // theta = 0., sigma = 5 mrad
-  generator->SetPhiRange(0., 0.); // 0 : 360
-
-  Double32_t distanceToTarget = 0.00005+0.00035; // work: 50 cm, test 0.5 micron: 0.00005+0.00035
+  Double32_t distanceToTarget = 50.; // work: 50 cm, test 0.5 micron: 0.00005+0.00035
   Double32_t sigmaOnTarget = 0.;
   //generator->SetSigmaXYZ(0., 0., -distanceToTarget, sigmaOnTarget, sigmaOnTarget);
   generator->SetBoxXYZ(0.,0., 0.,0., -distanceToTarget); // Xmin, Xmax, Ymin, Ymax, Z
@@ -110,7 +107,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   // ------------------------------------------------------------------------
 
   //-------Set visualisation flag to true------------------------------------
-  run->SetStoreTraj(kFALSE);
+  run->SetStoreTraj(kFALSE); // kFALSE
 
   //-------Set LOG verbosity  -----------------------------------------------
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
