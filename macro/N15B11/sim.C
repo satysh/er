@@ -92,10 +92,10 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   //generator->SetThetaRange(0., 0.); // -2 : 2
   generator->SetPhiRange(0., 180.); // 0 : 180
 
-  Double32_t distanceToTarget = 0.00005+0.00035; // work: 50 cm, test 0.5 micron: 0.00005+0.00035
+  Double32_t distanceToTarget = 50.; // work: 50 cm, test 0.5 micron: 0.00005+0.00035
   Double32_t sigmaOnTarget = 0.;
   //generator->SetSigmaXYZ(0., 0., -distanceToTarget, sigmaOnTarget, sigmaOnTarget);
-  generator->SetBoxXYZ(-0.5, 0., 0.5, 0., -distanceToTarget); // Xmin = -0.5, Ymin = -0.5, Xmax = 0.5, , Ymax = 0.5, Z
+  generator->SetBoxXYZ(-0.5, -0.5, 0.5, 0.5, -distanceToTarget); // Xmin = -0.5, Ymin = -0.5, Xmax = 0.5, , Ymax = 0.5, Z
 
   //generator->AddBackgroundIon("26P", 15, 26, 15, 0.25);
   //generator->AddBackgroundIon("26S", 16, 26, 16, 0.25);

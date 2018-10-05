@@ -218,8 +218,6 @@ wait
 cat ${RESULTSDIR}/out.txt
 echo -e "\e[1m\e[32m========== FINISHED ========= \e[0m"
 
-
-exit
 ####################################### Cross-section calculate #######################################
 wait
 

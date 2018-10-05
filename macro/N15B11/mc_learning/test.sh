@@ -1,6 +1,6 @@
 #!/bin/bash
 STAANGLE=5
-ENDANGLE=6
+ENDANGLE=35
 
 cd result
 rm -fv *.root
