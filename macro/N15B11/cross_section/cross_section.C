@@ -35,7 +35,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     SArrays* Ar = Fill_Arrays(anglesNumbers, N15_B11_draw);
     if (!Ar)
     {
-        cerr << "Fill_Arrays Error " << endl;
+        cerr << "Fill_Arrays Error N15" << endl;
         return;
     }
     Double_t* summAr = Ar->sAr;
@@ -91,13 +91,13 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
 
     leg->AddEntry(simN15Gr, "N15 Points", "p");
 
-    //N15_B11_draw = kTRUE;
+    N15_B11_draw = kTRUE;
     if (N15_B11_draw)
     {
         Ar = Fill_Arrays(anglesNumbers, N15_B11_draw);
         if (!Ar)
         {
-            cerr << "Fill_Arrays Error " << endl;
+            cerr << "Fill_Arrays Error B11" << endl;
             return;
         }
         delete []summAr;
