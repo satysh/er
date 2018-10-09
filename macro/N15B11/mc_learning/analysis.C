@@ -1,11 +1,15 @@
 void table_print(Double_t** arr, TString outDir);
 //--------------------------------------------------------------------------------------------------------------------------
-void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, TString inputDir = "input", TString outDir = "output_analysis")
+void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, Int_t thetBeg = 5, Int_t thetEnd = 35,
+                TString inputDir = "input", TString outDir = "output_analysis")
 {
     // arr[case][theta]
     Double_t** arr = new Double_t* [10];
     for(Int_t i = 0; i < 10; i++)
         arr[i] = new Double_t [31];
+    for(Int_t i = 0; i < 10; i++)
+        for(Int_t j = 0; j < 31; j++)
+            arr[i][j] = 0.;
 
     // For out graphics
     TCanvas* canv = new TCanvas("canv", "canv", 1600, 1000);
@@ -30,12 +34,13 @@ void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, TString inputDir = "in
         else
             cout << " " << rootFileName << " has been opened successfuly" << endl;
 
+        Int_t thetNum = thetEnd - thetBeg + 1;
         // Data reading
-        TVectorD thetaLab(31);
-        TVectorD sigma(31);
-        for(Int_t j = 5; j <= 35; j++)
+        TVectorD thetaLab(thetNum);
+        TVectorD sigma(thetNum);
+        for(Int_t j = thetBeg; j <= thetEnd; j++)
         {
-            thetaLab(j-5) = (Double_t)j;
+            thetaLab(j-thetBeg) = (Double_t)j;
             TString treeName;
             treeName.Form("tree_%d", j);
             TTree* tree = (TTree*)file->Get(treeName);
@@ -66,8 +71,8 @@ void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, TString inputDir = "in
             cout << " Mean: " << curMean<< endl;
             cout << " StdDev: " << curStdDev << endl;
             c1->Close();
-            sigma(j-5) = curStdDev;
-            arr[i-caseNumBeg][j-5] = curStdDev; // fill arr[case][theta]
+            sigma(j-thetBeg) = curStdDev;
+            arr[i-1][j-5] = curStdDev; // fill arr[case][theta]
         }
         canv->cd();
         TString graphName;
@@ -75,9 +80,9 @@ void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, TString inputDir = "in
         TGraph* gr = new TGraph(thetaLab, sigma);
         gr->SetName(graphName);
         //gr->Draw("ACP");
-        gr->SetMarkerStyle(1+i-caseNumBeg);
-        gr->SetMarkerColor(1+i-caseNumBeg);
-        gr->SetLineColor(1+i-caseNumBeg);
+        gr->SetMarkerStyle(i);
+        gr->SetMarkerColor(i);
+        gr->SetLineColor(i);
 
         mg->Add(gr);
         TString legName;
