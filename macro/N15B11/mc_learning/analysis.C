@@ -1,17 +1,7 @@
 void table_print(Double_t** arr, TString outDir);
 //--------------------------------------------------------------------------------------------------------------------------
-void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, TString inputDir = "input", TString outDir = "output_analysis",
-                 TString dictionaryOffilesNames = "dofn.txt")
+void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, TString inputDir = "input", TString outDir = "output_analysis")
 {
-    // Input file opens
-    TString dofn = inputDir + "/" + dictionaryOffilesNames;
-    ifstream fin(dofn);
-    if(!fin.is_open())
-    {
-        cerr << "Can't open the dictionary of files names." << endl;
-        return;
-    }
-
     // arr[case][theta]
     Double_t** arr = new Double_t* [10];
     for(Int_t i = 0; i < 10; i++)
@@ -26,33 +16,8 @@ void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, TString inputDir = "in
     // Fill graphics and table
     for(Int_t i = caseNumBeg; i <= caseNumEnd; i++)
     {
-        // File name reading for curent case i
         TString rootFileName;
-        while(!fin.eof())
-        {
-            TString readName;
-            fin >> readName;
-            //cout << i << ": " << readName << endl;
-            TString caseNum;
-            caseNum.Form("%d", i);
-            if(readName.Contains(caseNum) && readName.Contains("root"))
-            {
-                rootFileName = inputDir + "/" + readName;
-
-                cout << "Case: " << i << "\n " << rootFileName << " has been found successfuly" << endl;
-                fin.clear();
-                break;
-            }
-
-            if (fin.eof())
-            {
-                cerr << "Case: " << i << "\n " << "Can't found file to case " << i << endl;
-                fin.clear();
-                fin.close();
-                return;
-            }
-        }
-
+        rootFileName.Form("%s/%d_N.root", inputDir.Data(), i);
         // The root file is opening
         TFile* file = new TFile(rootFileName, "read");
         if (file->IsZombie())
@@ -122,9 +87,6 @@ void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, TString inputDir = "in
         file->Close();
     }
 
-    fin.clear();
-    fin.close();
-
     table_print(arr, outDir);
 
     canv->cd();
@@ -182,7 +144,7 @@ void table_print(Double_t** arr, TString outDir)
         }
         fout << endl;
 ///////////////////////////////////////////
-        fout << "_____|____________|______|______|______|______|______|______|______|______|" << endl;
+    fout << "_____|____________|______|______|______|______|______|______|______|______|" << endl;
 //////////////////////////////////////////
     }
     for(Int_t i = 0; i < 10; i++)
