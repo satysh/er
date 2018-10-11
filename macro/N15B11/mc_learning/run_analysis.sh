@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#ion name sets 
+ionname=B11
+
 #work directories names
 inputdir=input
 outdir=output_analysis
@@ -27,5 +30,5 @@ else
 	mkdir ${outdir}
 fi
 
-root -l -b -q "analysis.C(${begin}, ${end}, ${thbeg}, ${thend}, \"${inputdir}\", \"${outdir}\")" 
+root -l -b -q "analysis.C(${begin}, ${end}, ${thbeg}, ${thend}, \"${inputdir}\", \"${outdir}\", \"${ionname}\")" 
 

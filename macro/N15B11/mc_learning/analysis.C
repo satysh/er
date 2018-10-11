@@ -1,7 +1,7 @@
-void table_print(Double_t** arr, TString outDir);
+void table_print(Double_t** arr, TString outDir, TString in);
 //--------------------------------------------------------------------------------------------------------------------------
 void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, Int_t thetBeg = 5, Int_t thetEnd = 35,
-                TString inputDir = "input", TString outDir = "output_analysis")
+                TString inputDir = "input", TString outDir = "output_analysis", TString ionName = "N15")
 {
     // arr[case][theta]
     Double_t** arr = new Double_t* [10];
@@ -21,7 +21,7 @@ void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, Int_t thetBeg = 5, Int
     for(Int_t i = caseNumBeg; i <= caseNumEnd; i++)
     {
         TString rootFileName;
-        rootFileName.Form("%s/%d_N.root", inputDir.Data(), i);
+        rootFileName.Form("%s/%d_%s.root", inputDir.Data(), i, ionName.Data());
         // The root file is opening
         TFile* file = new TFile(rootFileName, "read");
         if (file->IsZombie())
@@ -29,7 +29,7 @@ void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, Int_t thetBeg = 5, Int
             cerr << "Case: " << i << "\n " << "Can't open " << rootFileName << endl;
             file->Clear();
             file->Close();
-            continue;
+            return;
         }
         else
             cout << " " << rootFileName << " has been opened successfuly" << endl;
@@ -92,29 +92,29 @@ void analysis(Int_t caseNumBeg = 1, Int_t caseNumEnd = 1, Int_t thetBeg = 5, Int
         file->Close();
     }
 
-    table_print(arr, outDir);
+    table_print(arr, outDir, ionName);
 
     canv->cd();
     mg->Draw("ACP");
     mg->GetXaxis()->SetTitle("Theta Lab");
     mg->GetYaxis()->SetTitle("StdDev");
-    leg->SetHeader("N15 CASES");
+    leg->SetHeader(ionName+" CASES");
     leg->Draw();
     gPad->SetGrid(2, 2);
     TString canvFileName;
-    canvFileName.Form("%s/canv.pdf", outDir.Data());
+    canvFileName.Form("%s/canv_%s.pdf", outDir.Data(), ionName.Data());
     canv->SaveAs(canvFileName);
     //canv->Close();
 
-    TString outRootFileName = outDir + "/canv.root";
+    TString outRootFileName = outDir + "/canv_" + ionName + ".root";
     TFile* outFile = new TFile(outRootFileName, "RECREATE");
     canv->Write();
 }
 //---------------------------------------------------------------------------------------------------------------
-void table_print(Double_t** arr, TString outDir)
+void table_print(Double_t** arr, TString outDir, TString ionName)
 {
     // Output file opens
-    TString outFileNameWithTable = outDir + "/" + "table.txt";
+    TString outFileNameWithTable = outDir + "/" + "table_" + ionName + ".txt";
     ofstream fout(outFileNameWithTable);
     if(!fout.is_open())
     {
