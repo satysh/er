@@ -205,8 +205,12 @@ void ERIonGenerator::SpreadingParameters()
     }
   }
 
-  fPx = pt*TMath::Cos(phi);
-  fPy = pt*TMath::Sin(phi);
+  //fPx = pt*TMath::Cos(phi);
+  //fPy = pt*TMath::Sin(phi);
+  Double_t theta_x = theta*TMath::Cos(phi);
+  fPz = pabs*TMath::Cos(theta_x);
+  fPx = pabs*TMath::Sin(theta_x);
+  fPy = 0.;
 
   if (fBoxVtxIsSet) {
     fX = gRandom->Uniform(fX1,fX2);

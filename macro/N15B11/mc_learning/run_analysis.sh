@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #ion name sets 
-ionname=B11
+ionname=N15
 
 #work directories names
 inputdir=input
