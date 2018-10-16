@@ -317,12 +317,13 @@ void ERN15B11Detector::StartNewPoint(void)
 	fPosIn.Vect().GetXYZ(globalPos);
 	matrix.MasterToLocal(globalPos, localPos);
 	fPosInLocal.SetXYZ(localPos[0], localPos[1], localPos[2]);
-
+/*
 	if (!tester)
 	{
 		Write_curent_theta();
 		tester = kTRUE;
 	}
+*/
 }
 
 void ERN15B11Detector::FinishNewPoint(TClonesArray* p_collection)

@@ -34,7 +34,7 @@ then
 fi
 
 #Calculate step and Interaction numbers
-a=1
+a=3
 b=1
 STEP=$(echo "$a/$b" | bc -l) #STEP=a/b
 ITNUMBER=$(echo "1+($MAXANGLE-$MINANGLE)/$STEP" | bc -l)
@@ -169,13 +169,13 @@ for IT in $(seq 1 ${ITNUMBER}); do
 	echo -e "\e[1m\e[32m========== All calculation finished === Angle( ${ANG} ) ========= \e[0m"
     wait
     ####################################### MC analysis #######################################
-	if [ -d mc_learning/output/ ];then
-        	cd mc_learning/output/
-		for THR in $(seq 1 ${NTHREADS});do
-		    cat interact_thetas_${THR}.txt >> ../result/thetas/interact_thetas_${ANG}.txt
-		done
-           	cd -
-        fi
+#	if [ -d mc_learning/output/ ];then
+#        	cd mc_learning/output/
+#		for THR in $(seq 1 ${NTHREADS});do
+#		    cat interact_thetas_${THR}.txt >> ../result/thetas/interact_thetas_${ANG}.txt
+#		done
+#          	cd -
+#        fi
     ####################################### Digitization #######################################
     if [[ $TOADDDIGI = $STRING ]]
     then

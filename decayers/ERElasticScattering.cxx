@@ -194,7 +194,7 @@ Bool_t ERElasticScattering::Stepping()
 
             Double_t theta = ThetaGen();
             Double_t phi = fRnd->Uniform(fPhi1, fPhi2);
-            Write_curent_theta(theta*RadToDeg());
+            //Write_curent_theta(theta*RadToDeg());
             LOG(INFO) << "Theta: " << theta*RadToDeg() << FairLogger::endl;
             // In case of target ion registration
             if (theta > fTheta2*DegToRad() || theta < fTheta1*DegToRad())
@@ -294,7 +294,7 @@ Double_t ERElasticScattering::ThetaGen()
     else
     {
         Double_t dF1 = fabs(fCDFmax-fCDFmin);
-        Double_t dF2 = fabs(fCDFmaxTargetIon-fCDFminTargetIon);
+        Double_t dF2 = 0.*fabs(fCDFmaxTargetIon-fCDFminTargetIon);
         Double_t dLength = dF1 + dF2;
 /*
         std::cout.precision(12);
