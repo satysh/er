@@ -1,5 +1,6 @@
 // STD
 #include <iostream>
+#include <iomanip>
 
 // EXPERTROOT
 #include "EROLVDetector.h"
@@ -21,25 +22,37 @@ EROLVDetector::EROLVDetector()
 {
 }
 //-------------------------------------------------------------------------------------------------
-EROLVDetector::EROLVDetector(const char* Name, Bool_t Active, Int_t DetId/*=0*/)
-: ERDetector(Name, Active, DetId)
+EROLVDetector::EROLVDetector(const char* Name, Bool_t Active, Int_t DetId/*=0*/) :
+fParticlePDG(0),
+fNutronsNum(0),
+ERDetector(Name, Active, DetId)
 {
-  fParticlePDG = 0;
-  fNutronsNum = 0;
 }
 
 Bool_t EROLVDetector::ProcessHits(FairVolume* vol)
 {
+  if (gMC->TrackPid() != 2112) 
+  	return kTRUE;
+
+  static Int_t curPdgMem = 0;
+  static Int_t i = 0;
+  Int_t curPdg = gMC->TrackPid();
   if (gMC->IsTrackEntering())
   { // Return true if this is the first step of the track in the current volume
     StartNewPoint();
+
     if (gMC->TrackPid() == fParticlePDG)
     {
       fNutronsNum++;
-      std::cout << "nutron: " << fNutronsNum << ", time: " << fTimeIn << std::endl;
+      //std::cout << "nutron: " << fNutronsNum << ", time: " << fTimeIn << std::endl;
     }
-  }
 
+    i = 0;
+    if (curPdg != curPdgMem) curPdgMem = curPdg;
+  }
+  std::cout << "Pdg: " << std::setw(12) << curPdg << " " << std::setw(2) << i << " ";
+  std::cout << "TimeOfFlight: " << gMC->TrackTime() * 1.0e09 << std::endl; 
+  i++;
   fELoss += gMC->Edep(); // GeV //Return the energy lost in the current step
 
   if (gMC->IsTrackExiting() || //true if this is the last step of the track in the current volume
@@ -47,6 +60,7 @@ Bool_t EROLVDetector::ProcessHits(FairVolume* vol)
       gMC->IsTrackDisappeared())
   {
       FinishNewPoint();
+      std::cout << std::endl;
   }
 
   return kTRUE;

@@ -32,7 +32,6 @@ private:
 
     Int_t fParticlePDG;
     Int_t fNutronsNum;
-
     ClassDef(EROLVDetector,1)
 };
 

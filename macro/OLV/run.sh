@@ -5,7 +5,7 @@ index=1
 rm -fv *.root
 rm -fv *txt
 
-cd ~/soft/fork_expertroot_build
+cd ../../../build
 make -j3
 cd -
 
