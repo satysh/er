@@ -148,10 +148,10 @@ Bool_t ERElasticScattering::Stepping()
 */
     if (!fDecayFinish && gMC->TrackPid() == fInputIonPDG->PdgCode() && TString(gMC->CurrentVolName()).Contains(fVolumeName))
     {
-        //gMC->SetMaxStep(fStep);
+        gMC->SetMaxStep(fStep);
         TLorentzVector curPos;
         gMC->TrackPosition(curPos);
-        fDecayPosZ = 0.;
+        //fDecayPosZ = 0.;
         if (curPos.Z() >= fDecayPosZ)
         {
             TLorentzVector fInputIonV;
@@ -194,7 +194,7 @@ Bool_t ERElasticScattering::Stepping()
 
             Double_t theta = ThetaGen();
             Double_t phi = fRnd->Uniform(fPhi1*DegToRad(), fPhi2*DegToRad());
-            Write_curent_theta(theta*RadToDeg());
+            //Write_curent_theta(theta*RadToDeg());
             LOG(INFO) << "Theta: " << theta*RadToDeg() << FairLogger::endl;
             // In case of target ion registration
             if (theta > fTheta2*DegToRad() || theta < fTheta1*DegToRad())
