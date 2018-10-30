@@ -113,7 +113,7 @@ void create_N15B11_detector_geo(Double_t angle = 20.)
         rotCurDet->RotateY(curAngle);
 
         Double_t rotAngle = (curAngle) * TMath::Pi()/180.;
-        Double_t distanceOfDet = 21.8;
+        Double_t distanceOfDet = 5.*21.8;
         Double_t dx = distanceOfDet * sin(rotAngle);
         Double_t dz = distanceOfDet * cos(rotAngle);
 

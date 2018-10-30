@@ -148,10 +148,10 @@ Bool_t ERElasticScattering::Stepping()
 */
     if (!fDecayFinish && gMC->TrackPid() == fInputIonPDG->PdgCode() && TString(gMC->CurrentVolName()).Contains(fVolumeName))
     {
-        gMC->SetMaxStep(fStep);
+        //gMC->SetMaxStep(fStep);
         TLorentzVector curPos;
         gMC->TrackPosition(curPos);
-        //fDecayPosZ = 0.;
+        fDecayPosZ = 0.;
         if (curPos.Z() >= fDecayPosZ)
         {
             TLorentzVector fInputIonV;
@@ -193,7 +193,7 @@ Bool_t ERElasticScattering::Stepping()
 
 
             Double_t theta = ThetaGen();
-            Double_t phi = fRnd->Uniform(fPhi1, fPhi2);
+            Double_t phi = fRnd->Uniform(fPhi1*DegToRad(), fPhi2*DegToRad());
             Write_curent_theta(theta*RadToDeg());
             LOG(INFO) << "Theta: " << theta*RadToDeg() << FairLogger::endl;
             // In case of target ion registration
@@ -294,7 +294,7 @@ Double_t ERElasticScattering::ThetaGen()
     else
     {
         Double_t dF1 = fabs(fCDFmax-fCDFmin);
-        Double_t dF2 = fabs(fCDFmaxTargetIon-fCDFminTargetIon);
+        Double_t dF2 = 0.*fabs(fCDFmaxTargetIon-fCDFminTargetIon);
         Double_t dLength = dF1 + dF2;
 /*
         std::cout.precision(12);
@@ -341,14 +341,14 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
     globalTheta = thetaCMIon;
     Double_t thetaCMTargetIon;
     thetaCMTargetIon = 180. - 2*fDetPos;
-    fTheta1 = thetaCMIon*RadToDeg() - 2.;
-    fTheta2 = thetaCMIon*RadToDeg() + 2.;
+    fTheta1 = thetaCMIon*RadToDeg() - 0.15;
+    fTheta2 = thetaCMIon*RadToDeg() + 0.15;
 
     fThetaTargetIon1 = thetaCMTargetIon - 2.;
     fThetaTargetIon2 = thetaCMTargetIon + 2.;
 
-    fPhi1 = -6.*DegToRad()/*-asin( 2./218./sin(radAngle) )*/;
-    fPhi2 = 6.*DegToRad()/*asin( 2./218./sin(radAngle) )*/;
+    //fPhi1 = -asin( 2./218./sin(radAngle) );
+    //fPhi2 = asin( 2./218./sin(radAngle) );
 }
 
 Bool_t ERElasticScattering::Write_curent_theta(Double_t theta)
