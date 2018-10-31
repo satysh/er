@@ -30,6 +30,7 @@ public:
     Double_t GetCDFRangesSum()     const { return fCDFRangesSum; }
 
     Int_t GetInteractNumInTarget() const { return fInteractNumInTarget; }
+    Double_t GetProbability(Double_t dTheta, Int_t primOrTarIon = 1);
 
 public:
     Bool_t Init();

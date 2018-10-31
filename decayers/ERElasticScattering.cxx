@@ -341,8 +341,8 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
     globalTheta = thetaCMIon;
     Double_t thetaCMTargetIon;
     thetaCMTargetIon = 180. - 2*fDetPos;
-    fTheta1 = thetaCMIon*RadToDeg() - 0.15;
-    fTheta2 = thetaCMIon*RadToDeg() + 0.15;
+    fTheta1 = thetaCMIon*RadToDeg() - 2.;
+    fTheta2 = thetaCMIon*RadToDeg() + 2.;
 
     fThetaTargetIon1 = thetaCMTargetIon - 2.;
     fThetaTargetIon2 = thetaCMTargetIon + 2.;
@@ -368,6 +368,18 @@ Bool_t ERElasticScattering::Write_curent_theta(Double_t theta)
     fout.clear();
     fout.close();
     return kTRUE;
+}
+
+Double_t ERElasticScattering::GetProbability(Double_t dTheta, Int_t primOrTarIon)
+{
+    Double_t detPosCM;
+    if (primOrTarIon == 1) // for N15 == 1
+        detPosCM = 0.5*(fTheta1+fTheta2);
+    else                   // for B11
+        detPosCM = 0.5*(fThetaTargetIon1+fThetaTargetIon2);
+    Double_t CDF1 = fThetaCDF->Eval(detPosCM - dTheta);
+    Double_t CDF2 = fThetaCDF->Eval(detPosCM + dTheta);
+    return (CDF2 - CDF1);
 }
 
 ClassImp(ERElasticScattering)

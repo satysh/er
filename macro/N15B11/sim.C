@@ -142,5 +142,5 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   cout << "Interactions number in target: " << scattering->GetInteractNumInTarget() << endl;
   cout << "dPhi range: " << scattering->GetdPhi() << endl;
   cout.precision(12);
-  cout << "summ: "<< scattering->GetCDFRangesSum() << endl;
+  cout << "summ: "<< scattering->GetProbability(0.5) << endl;
 }
