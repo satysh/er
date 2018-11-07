@@ -13,7 +13,8 @@ Double_t* GetdPhiAr(Int_t anglesNumbers);
 
 //---------------------------------------------------------------------------------------------------------------------
 void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 3, Int_t anglesNumbers = 0, Double_t STEP=1.,
-                   TString workDir = "output", Bool_t N15_B11_draw = kFALSE)
+
+                  Int_t case_n = 0, TString workDir = "output", Bool_t N15_B11_draw = kFALSE)
 {
     nEvents = nEvents*nThreads;
 
@@ -79,9 +80,10 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         iB = cos(curAngle)*sqrt(1. - ratio*ratio*sin(curAngle)*sin(curAngle));
         iC = acos(-iA + iB);
         tetN15(i) = iC*180./TMath::Pi();
-        fout << 0.5*crossSecLab*iC << "\t" << tetN15(i) << endl;
+        fout << tetN15(i) << "\t" << sigmaCMN15(i) << endl;
     }
-
+    fout.clear();
+    fout.close();
     TGraph* simN15Gr = new TGraph(tetN15, sigmaCMN15);
 
     canv->cd();
@@ -91,7 +93,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
 
     leg->AddEntry(simN15Gr, "N15 Points", "p");
 
-    //N15_B11_draw = kTRUE;
+    N15_B11_draw = kTRUE;
     if (N15_B11_draw)
     {
         Ar = Fill_Arrays(anglesNumbers, N15_B11_draw);
@@ -109,6 +111,13 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
 
         nEventsAr = GetnEventsInTarget(anglesNumbers, N15_B11_draw);
     }
+
+    fout.open("output/B11_cross_and_theta.txt");
+    if (!fout.is_open())
+    {
+        cerr << "Error: missing output directory" << endl;
+        return;
+    }
     TVectorD sigmaCMB11(anglesNumbers);
     TVectorD tetB11(anglesNumbers);
     Int_t memNEv = nEvents;
@@ -119,7 +128,10 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         Double_t curAngle = ((Double_t)i*STEP + begAng)*TMath::Pi()/180.;
         sigmaCMB11(i) = 0.25*crossSecLab/cos(curAngle);
         tetB11(i) = 180. - 2*curAngle*180./TMath::Pi();
+        fout << tetB11(i) << "\t" << sigmaCMB11(i) << endl;
     }
+    fout.clear();
+    fout.close();
 
     TGraph* simB11Gr = new TGraph(tetB11, sigmaCMB11);
 
@@ -131,7 +143,9 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     leg->AddEntry(simB11Gr, "B11 Points", "p");
 
     canv->cd();
-    leg->SetHeader("Log scale");
+    TString headerStr;
+    headerStr.Form("Log scale, case %d", case_n);
+    leg->SetHeader(headerStr);
     leg->Draw();
 
     gPad->SetGrid(4, 4);
@@ -180,6 +194,7 @@ bool Draw_Base_Cross_Section(TCanvas* cn, TLegend* leg)
     sigmaFun->GetYaxis()->SetTitle("cross-section");
     sigmaFun->SetLineWidth(4);
     sigmaFun->SetMarkerStyle(8);
+    sigmaFun->SetMinimum(1.0e-11);
     leg->AddEntry(sigmaFun, "Theory", "l");
     f.close();
     return kTRUE;
