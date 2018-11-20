@@ -47,7 +47,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
 
   ERDetector* target = new ERTarget("N15B11_target", kTRUE, 1);
   target->SetGeometryFileName("N15.target.root");
-  run->AddModule(target);
+  //run->AddModule(target);
 
   FairDetector* detector = new ERN15B11Detector("N15B11detector", kTRUE, 1, index);
   detector->SetGeometryFileName("N15B11_detector.geo.root");
@@ -67,7 +67,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   scattering->SetThetaCDF("cos_tetta_cross.txt");
   scattering->SetUniformPos(-0.00035,0.00035);
   scattering->SetStep(0.00001); //0.1 micron
-  scattering->SetDecayVolume("targetB11"); //targetB11
+  scattering->SetDecayVolume("cave"); //targetB11
   scattering->SetDetAngle(angle); // argumetn is an angle of detector position in Lab
   //scattering->SetThetaRange(18.4, 19.4);
   scattering->SetPhiRange(-6., 6.); // -6.: +6.
@@ -142,5 +142,5 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   cout << "Interactions number in target: " << scattering->GetInteractNumInTarget() << endl;
   cout << "dPhi range: " << scattering->GetdPhi() << endl;
   cout.precision(12);
-  cout << "summ: "<< scattering->GetProbability(0.5) << endl;
+  cout << "summ: "<< scattering->GetCDFRangesSum() << endl;
 }

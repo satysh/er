@@ -148,10 +148,10 @@ Bool_t ERElasticScattering::Stepping()
 */
     if (!fDecayFinish && gMC->TrackPid() == fInputIonPDG->PdgCode() && TString(gMC->CurrentVolName()).Contains(fVolumeName))
     {
-        gMC->SetMaxStep(fStep);
+        //gMC->SetMaxStep(fStep);
         TLorentzVector curPos;
         gMC->TrackPosition(curPos);
-        //fDecayPosZ = 0.;
+        fDecayPosZ = 0.;
         if (curPos.Z() >= fDecayPosZ)
         {
             TLorentzVector fInputIonV;

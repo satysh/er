@@ -17,7 +17,9 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
                   Int_t case_n = 0, TString workDir = "output", Bool_t N15_B11_draw = kFALSE)
 {
     nEvents = nEvents*nThreads;
-
+    Double_t dTheta = 2.*TMath::DegToRad();
+    Double_t Radius = 21.8;
+    Double_t detH = 0.4;
     TCanvas* canv = new TCanvas("canv", "canv", 1000, 800);
     canv->SetLogy();
     TLegend* leg = new TLegend(1., 1., 0.80, 0.80);
@@ -68,18 +70,20 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     TVectorD sigmaCMN15(anglesNumbers);
     TVectorD tetN15(anglesNumbers);
     for (i = 0; i < anglesNumbers; i++) {
-        nEvents = nEventsAr[i];
-        Double_t Integrat = ( (Double_t)nEvents/summAr[i] );
-        Double_t crossSecLab = ( (Double_t)nN15Ar[i]/Integrat );
         Double_t curAngle = ((Double_t)i*STEP + begAng)*TMath::Pi()/180.;
-        Double_t iA = 1. + ratio*ratio*cos(2.*curAngle);
-        Double_t iB = 1. - ratio*ratio*sin(curAngle)*sin(curAngle);
-        Double_t iC = sqrt(iB)/iA;
-        sigmaCMN15(i) = 0.5*crossSecLab*iC;
-        iA = ratio*sin(curAngle)*sin(curAngle);
-        iB = cos(curAngle)*sqrt(1. - ratio*ratio*sin(curAngle)*sin(curAngle));
-        iC = acos(-iA + iB);
+        Double_t iA = ratio*sin(curAngle)*sin(curAngle);
+        Double_t iB = cos(curAngle)*sqrt(1. - ratio*ratio*sin(curAngle)*sin(curAngle));
+        Double_t iC = acos(-iA + iB);
         tetN15(i) = iC*180./TMath::Pi();
+        nEvents = nEventsAr[i];
+        Double_t dPhi = detH*180./(TMath::Pi()*Radius*sin(curAngle));
+        Double_t Omega = dPhi*(cos(iC-dTheta) - cos(iC+dTheta));
+        Double_t Integrat = (Double_t)nEvents*2.*TMath::Pi()*Omega/summAr[i];
+        Double_t crossSecLab = (Double_t)nN15Ar[i]*dPhiAr[i]*TMath::DegToRad()/Integrat ;
+        iA = 1. + ratio*ratio*cos(2.*curAngle);
+        iB = 1. - ratio*ratio*sin(curAngle)*sin(curAngle);
+        iC = sqrt(iB)/iA;
+        sigmaCMN15(i) = 0.5*crossSecLab*iC;
         fout << tetN15(i) << "\t" << sigmaCMN15(i) << endl;
     }
     fout.clear();
@@ -93,7 +97,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
 
     leg->AddEntry(simN15Gr, "N15 Points", "p");
 
-    N15_B11_draw = kTRUE;
+    //N15_B11_draw = kTRUE;
     if (N15_B11_draw)
     {
         Ar = Fill_Arrays(anglesNumbers, N15_B11_draw);
@@ -123,8 +127,8 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     Int_t memNEv = nEvents;
     for (i = 0; i < anglesNumbers; i++) {
         nEvents = nEventsAr[i];
-        Double_t Integrat = ( (Double_t)nEvents/summAr[i] );
-        Double_t crossSecLab = ( (Double_t)nB11Ar[i]/Integrat);
+        Double_t Integrat = (Double_t)nEvents/summAr[i];
+        Double_t crossSecLab = (Double_t)nB11Ar[i]/Integrat;
         Double_t curAngle = ((Double_t)i*STEP + begAng)*TMath::Pi()/180.;
         sigmaCMB11(i) = 0.25*crossSecLab/cos(curAngle);
         tetB11(i) = 180. - 2*curAngle*180./TMath::Pi();
