@@ -1,9 +1,8 @@
 #!/bin/bash
-NEVENTS=1000
-STARTANG=20
-NTHREADS=3
-ANGNUM=1
-STEP=1
+NEVENTS=10000
+STARTANG=5
+NTHREADS=16
+ANGNUM=31
 if [ -d result ]; then
 	cd result
         rm -fv resultGr.pdf 
@@ -12,4 +11,4 @@ else
 	mkdir result
 fi
 
-root -l "cross_section.C(${NEVENTS}, ${STARTANG}, ${NTHREADS}, ${ANGNUM}, ${STEP})"
+root -l "cross_section.C(${NEVENTS}, ${STARTANG}, ${NTHREADS}, ${ANGNUM})"
