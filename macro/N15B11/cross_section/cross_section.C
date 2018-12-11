@@ -16,7 +16,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
                   Int_t case_n = 1, TString workDir = "output", Bool_t N15_B11_draw = kFALSE)
 {
     nEvents = nEvents*nThreads;
-    Double_t dThetaLab = 0.5*TMath::DegToRad();
+    Double_t dThetaLab = 0.262822833*TMath::DegToRad();
     Double_t Radius = 21.8;
     Double_t detH = 0.4;
 
@@ -66,7 +66,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         return;
     }
     Int_t i = 0;
-    Double_t ratio = 1.3626837426803;
+    Double_t ratio = 1.3626837426803; // M1/M2
     TVectorD sigmaCMN15(anglesNumbers);
     TVectorD tetN15(anglesNumbers);
     for (i = 0; i < anglesNumbers; i++) {
@@ -84,6 +84,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         iA = ratio*sin(curAngle + dThetaLab)*sin(curAngle + dThetaLab);
         iB = cos(curAngle + dThetaLab)*sqrt(1. - ratio*ratio*sin(curAngle + dThetaLab)*sin(curAngle + dThetaLab));
         Double_t dThetaCM2 = acos(-iA + iB);
+        cout << "dThetaCM: " << (dThetaCM2 - dThetaCM1)*TMath::RadToDeg() << endl;
         Double_t Omega = dPhi*(cos(dThetaCM1) - cos(dThetaCM2));
         Double_t Integrat = (Double_t)nEvents*2.*TMath::Pi()*Omega/summAr[i];
         Double_t crossSecLab = (Double_t)nN15Ar[i]*dPhiAr[i]*TMath::DegToRad()/Integrat ;
