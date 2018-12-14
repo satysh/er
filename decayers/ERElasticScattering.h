@@ -132,8 +132,6 @@ private:
     **/
     void RangesCalculate(Double_t iM, Double_t tM);
 
-    Bool_t Write_curent_theta(Double_t theta);
-
     ClassDef(ERElasticScattering, 1);
 };
 
