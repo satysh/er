@@ -64,6 +64,10 @@ ERElasticScattering::ERElasticScattering(TString name):
     fIonMass(0.),
     fInteractNumInTarget(0),
     fCDFRangesSum(0.),
+    fThetaCMSumPri(0.),
+    fThetaCMSumTar(0.),
+    fNumOfPriIons(0),
+    fNumOfTarIons(0),
     ionMassTrueOrFalseTester(kFALSE)
 {
 }
@@ -204,9 +208,16 @@ Bool_t ERElasticScattering::Stepping()
             Double_t phi = fRnd->Uniform(fPhi1*DegToRad(), fPhi2*DegToRad());
 
             // In case of target ion registration
-            if (theta > fTheta2*DegToRad() || theta < fTheta1*DegToRad())
+            if (fIonTester)
             {
                 phi = phi + 180.*DegToRad();
+                fThetaCMSumTar += theta*RadToDeg();
+                fNumOfTarIons++;
+            }
+            else
+            {
+                fThetaCMSumPri += theta*RadToDeg();
+                fNumOfPriIons++;
             }
 
             if (fThetaFileName != "")
@@ -317,10 +328,12 @@ Double_t ERElasticScattering::ThetaGen()
         if (Rnd <= dF1)
         {
             curCDF = fCDFmin + Rnd;
+            fIonTester = kFALSE;
         }
         else
         {
             curCDF = fCDFminTargetIon + Rnd - dF1;
+            fIonTester = kTRUE;
         }
 
         theta = fThetaInvCDF->Eval(curCDF)*DegToRad();
