@@ -87,10 +87,10 @@ public:
     Double_t GetCDFRangesSum()     const { return fCDFRangesSum; }
 
     /** @brief Returns ThetaCM mean for primary Ion. **/
-    Double_t GetThetaCMMeanPri()      const { return fThetaCMSumPri/fNumOfPriIons; }
+    Double_t GetThetaCMMeanPri()   const { if (fNumOfPriIons == 0) return 0.; return fThetaCMSumPri/fNumOfPriIons; }
 
     /** @brief Returns ThetaCM mean for target Ion. **/
-    Double_t GetThetaCMMeanTar()      const { return fThetaCMSumTar/fNumOfTarIons; }
+    Double_t GetThetaCMMeanTar()   const { if (fNumOfTarIons == 0) return 0.; return fThetaCMSumTar/fNumOfTarIons; }
 
     /** @brief Returns number of interactions on target. **/
     Int_t GetInteractNumInTarget() const { return fInteractNumInTarget; }
