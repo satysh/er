@@ -71,7 +71,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   scattering->SetDetAngle(angle); // argumetn is an angle of detector position in Lab
   scattering->SetDetThetaWidth(0.262822833); // Detectors theta width*0.5
   //scattering->SetThetaRange(18.4, 19.4);
-  //scattering->SetPhiRange(-6., 6.);
+  scattering->SetPhiRange(-6., 6.);
 
   decayer->AddDecay(scattering);
   run->SetDecayer(decayer);
@@ -112,7 +112,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
 
   //-------Set LOG verbosity  -----------------------------------------------
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
-  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
+  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
 
   //------- Initialize simulation run ---------------------------------------
   run->Init();
