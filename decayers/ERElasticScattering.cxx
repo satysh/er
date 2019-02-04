@@ -347,27 +347,27 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
     Double_t rAng = fDetPos*DegToRad();
     Double_t ratio = iM/tM;
     Double_t ratio2 = ratio*ratio;
-    Double_t dThetaDet = fDetThetaWidth*TMath::DegToRad(); // Detectors dThetaDet
+    Double_t fDetThetaWRad = fDetThetaWidth*TMath::DegToRad(); // Detectors fDetThetaWRad
     Double_t Radius = 218.;
     // Primary Ion
     if (iM != tM)
     {
-        fTheta1 = TMath::RadToDeg()*acos( -ratio*sin(rAng-dThetaDet)*sin(rAng-dThetaDet)
-                    + cos(rAng-dThetaDet)*sqrt(1.-ratio2*sin(rAng-dThetaDet)*sin(rAng-dThetaDet)) );
-        fTheta2 = TMath::RadToDeg()*acos( -ratio*sin(rAng+dThetaDet)*sin(rAng+dThetaDet)
-                    + cos(rAng+dThetaDet)*sqrt(1.-ratio2*sin(rAng+dThetaDet)*sin(rAng+dThetaDet)) );
+        fTheta1 = TMath::RadToDeg()*acos( -ratio*sin(rAng-fDetThetaWRad)*sin(rAng-fDetThetaWRad)
+                    + cos(rAng-fDetThetaWRad)*sqrt(1.-ratio2*sin(rAng-fDetThetaWRad)*sin(rAng-fDetThetaWRad)) );
+        fTheta2 = TMath::RadToDeg()*acos( -ratio*sin(rAng+fDetThetaWRad)*sin(rAng+fDetThetaWRad)
+                    + cos(rAng+fDetThetaWRad)*sqrt(1.-ratio2*sin(rAng+fDetThetaWRad)*sin(rAng+fDetThetaWRad)) );
     }
     else
     {
-        fTheta1 = TMath::RadToDeg()*(2.*rAng - dThetaDet);
-        fTheta2 = TMath::RadToDeg()*(2.*rAng + dThetaDet);
+        fTheta1 = TMath::RadToDeg()*2.*(rAng - fDetThetaWRad);
+        fTheta2 = TMath::RadToDeg()*2.*(rAng + fDetThetaWRad);
     }
     LOG(DEBUG) << "  N15: CMTheta1: " << fTheta1 << ", CMTheta2: " << fTheta2
                 << ", average value: " << 0.5*(fTheta2-fTheta1) + fTheta1 << FairLogger::endl;
 
     // Target Ion
-    fThetaTargetIon1 = 180. - 2.*fDetPos - TMath::RadToDeg()*dThetaDet;
-    fThetaTargetIon2 = 180. - 2.*fDetPos + TMath::RadToDeg()*dThetaDet;
+    fThetaTargetIon1 = 180. - 2.*fDetPos - fDetThetaWidth;
+    fThetaTargetIon2 = 180. - 2.*fDetPos + fDetThetaWidth;
 }
 
 Double_t ERElasticScattering::GetProbability(Double_t dTheta, Int_t primOrTarIon)

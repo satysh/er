@@ -69,9 +69,9 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   scattering->SetStep(0.00001); //0.1 micron
   scattering->SetDecayVolume("targetB11"); //targetB11
   scattering->SetDetAngle(angle); // argumetn is an angle of detector position in Lab
-  scattering->SetDetThetaWidth(0.262822833); // Detectors theta width*0.5
+  scattering->SetDetThetaWidth(2.*0.262822833); // Detectors theta=2.*0.262822833 width*0.5
   //scattering->SetThetaRange(18.4, 19.4);
-  scattering->SetPhiRange(-6., 6.);
+  scattering->SetPhiRange(-10., 10.);
 
   decayer->AddDecay(scattering);
   run->SetDecayer(decayer);
@@ -93,7 +93,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   generator->SetThetaRange(0., 0.); // -2 : 2
   generator->SetPhiRange(0., 0.); // 0 : 180
 
-  Double32_t distanceToTarget = 50.; // work: 50 cm, test 0.5 micron: 0.00005+0.00035
+  Double32_t distanceToTarget = 0.00005+0.00035; // work: 50 cm, test 0.5 micron: 0.00005+0.00035
   Double32_t sigmaOnTarget = 0.;
   //generator->SetSigmaXYZ(0., 0., -distanceToTarget, sigmaOnTarget, sigmaOnTarget);
   generator->SetBoxXYZ(0., 0., 0., 0., -distanceToTarget); // Xmin = -0.5, Ymin = -0.5, Xmax = 0.5, , Ymax = 0.5, Z
