@@ -172,7 +172,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         Double_t dPhiDet = 4.*180. / (TMath::Pi()*Radius*TMath::Sin(curAngle));
         Double_t dphi = dPhiAr[i]/dPhiDet;
         cout << dPhiAr[i] << " / " << dPhiDet << " = " << dphi << endl;
-        sigmaCMB11(i) = (Double_t)nB11Ar[i]*summAr[i]*dphi / (nEvents*TMath::Pi()*TMath::Sin(TMath::DegToRad()*tetB11(i))*(-theta2+theta1));
+        sigmaCMB11(i) = (Double_t)nB11Ar[i]*summAr[i]*dphi / (nEvents*2.*TMath::Pi()*TMath::Sin(TMath::DegToRad()*tetB11(i))*(-theta2+theta1));
         fout << tetB11(i) << "\t" << sigmaCMB11(i) << endl;
     }
     fout.clear();
