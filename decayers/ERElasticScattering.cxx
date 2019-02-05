@@ -311,8 +311,8 @@ Double_t ERElasticScattering::ThetaGen()
     }
     else
     {
-        Double_t dF1 = fabs(fCDFmax-fCDFmin);
-        Double_t dF2 = 0.*fabs(fCDFmaxTargetIon-fCDFminTargetIon);
+        Double_t dF1 = 0.*fabs(fCDFmax-fCDFmin);
+        Double_t dF2 = fabs(fCDFmaxTargetIon-fCDFminTargetIon);
         Double_t dLength = dF1 + dF2;
 /*
         std::cout.precision(12);
@@ -366,8 +366,8 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
                 << ", average value: " << 0.5*(fTheta2-fTheta1) + fTheta1 << FairLogger::endl;
 
     // Target Ion
-    fThetaTargetIon1 = 180. - 2.*fDetPos - fDetThetaWidth;
-    fThetaTargetIon2 = 180. - 2.*fDetPos + fDetThetaWidth;
+    fThetaTargetIon1 = 180. - 2.*(fDetPos + fDetThetaWidth);
+    fThetaTargetIon2 = 180. - 2.*(fDetPos - fDetThetaWidth);
 }
 
 Double_t ERElasticScattering::GetProbability(Double_t dTheta, Int_t primOrTarIon)
