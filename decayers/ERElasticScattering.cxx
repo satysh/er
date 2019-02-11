@@ -153,10 +153,10 @@ Bool_t ERElasticScattering::Stepping()
 {
     if (!fDecayFinish && gMC->TrackPid() == fInputIonPDG->PdgCode() && TString(gMC->CurrentVolName()).Contains(fVolumeName))
     {
-        //gMC->SetMaxStep(fStep);
+        gMC->SetMaxStep(fStep);
         TLorentzVector curPos;
         gMC->TrackPosition(curPos);
-        fDecayPosZ = 0.;
+        //fDecayPosZ = 0.;
         if (curPos.Z() >= fDecayPosZ)
         {
             TLorentzVector fInputIonV;
@@ -306,7 +306,7 @@ Double_t ERElasticScattering::ThetaGen()
     else
     {
         Double_t dF1 = fabs(fCDFmax-fCDFmin);
-        Double_t dF2 = fabs(fCDFmaxTargetIon-fCDFminTargetIon);
+        Double_t dF2 = 0.*fabs(fCDFmaxTargetIon-fCDFminTargetIon);
         Double_t dLength = dF1 + dF2;
 /*
         std::cout.precision(12);
@@ -342,7 +342,6 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
     Double_t ratio = iM/tM;
     Double_t ratio2 = ratio*ratio;
     Double_t fDetThetaWRad = fDetThetaWidth*TMath::DegToRad(); // Detectors fDetThetaWRad
-    Double_t Radius = 218.;
     // Primary Ion
     if (iM != tM)
     {
@@ -364,10 +363,6 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
     fThetaTargetIon2 = 180. - 2.*(fDetPos - fDetThetaWidth);
     LOG(DEBUG) << "  B11: CMTheta1: " << fThetaTargetIon1 << ", CMTheta2: " << fThetaTargetIon2
                 << ", average value: " << 0.5*(fThetaTargetIon2-fThetaTargetIon1) + fThetaTargetIon1 << FairLogger::endl;
-    Double_t dPhi = 4.*180. / (TMath::Pi()*Radius*sin(TMath::DegToRad()*fDetPos));
-    fPhi1 = /*-6.*DegToRad()*/ -0.5*dPhi;
-    fPhi2 = /*6.*DegToRad()*/ 0.5*dPhi;
-
 }
 
 
