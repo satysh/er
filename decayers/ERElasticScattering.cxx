@@ -198,7 +198,7 @@ Bool_t ERElasticScattering::Stepping()
 
 
             Double_t theta = ThetaGen();
-            Double_t phi = 0.*fRnd->Uniform(fPhi1*DegToRad(), fPhi2*DegToRad());
+            Double_t phi = fRnd->Uniform(fPhi1*DegToRad(), fPhi2*DegToRad());
 
             // In case of target ion registration
             if (fIonTester)
@@ -306,7 +306,7 @@ Double_t ERElasticScattering::ThetaGen()
     else
     {
         Double_t dF1 = fabs(fCDFmax-fCDFmin);
-        Double_t dF2 = 0.*fabs(fCDFmaxTargetIon-fCDFminTargetIon);
+        Double_t dF2 = fabs(fCDFmaxTargetIon-fCDFminTargetIon);
         Double_t dLength = dF1 + dF2;
 /*
         std::cout.precision(12);
