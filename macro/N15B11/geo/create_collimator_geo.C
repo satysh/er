@@ -70,11 +70,11 @@ void create_collimator_geo()
     Double_t CoRmax = 1.6;   //cm
     Double_t CoZ = 28.8;
 
-    Double_t D1Rmin = .5;
+    Double_t D1Rmin = .15;
     Double_t D1Rmax = 1.5;   //cm
     Double_t D1Z = 0.2;
 
-    Double_t D2Rmin = .5;
+    Double_t D2Rmin = .75;
     Double_t D2Rmax = 1.5;   //cm
     Double_t D2Z = 0.2 ;
 

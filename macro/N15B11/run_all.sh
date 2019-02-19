@@ -11,10 +11,10 @@ OUTDIR=output_digi_parallel
 GRAPHSOUTDIR=digi_graphs_parallel
 
 # Variables
-NEVENTS=10000
-MINANGLE=5
-MAXANGLE=5
-NTHREADS=16
+NEVENTS=1000
+MINANGLE=35
+MAXANGLE=35
+NTHREADS=7
 
 # Digitization add or no add
 TOADDDIGI='yes'
@@ -167,15 +167,23 @@ for IT in $(seq 1 ${ITNUMBER}); do
 
 	echo "======================================" >> ${RESULTSDIR}/dPhi_info.txt
 	echo -e "\e[1m\e[32m========== All calculation finished === Angle( ${ANG} ) ========= \e[0m"
+
     wait
     ####################################### MC analysis #######################################
-#	if [ -d mc_learning/output/ ];then
-#        	cd mc_learning/output/
-#		for THR in $(seq 1 ${NTHREADS});do
-#		    cat interact_thetas_${THR}.txt >> ../result/thetas/interact_thetas_${ANG}.txt
-#		done
-#          	cd -
-#        fi
+	if [ -d mc_learning/output/ ];then
+        	cd mc_learning/output/
+		for THR in $(seq 1 ${NTHREADS});do
+		    cat interact_thetas_${THR}.txt >> ../result/thetas/interact_thetas_${ANG}.txt
+		done
+          	cd -
+   fi
+
+	wait
+    ####################################### ThetaCM write ######################################
+    cd ${SIMOUTDIR}
+    grep "ThetaCM Mean for N15:" out_1.txt | cut -f5 -d " " >> ../${RESULTSDIR}/thetaCMN15.txt
+    grep "ThetaCM Mean for B11:" out_1.txt | cut -f5 -d " " >> ../${RESULTSDIR}/thetaCMB11.txt
+    cd -
     ####################################### Digitization #######################################
     if [[ $TOADDDIGI = $STRING ]]
     then
@@ -235,11 +243,13 @@ grep "nB11Gas:" ${RESULTSDIR}/out.txt >> cross_section/input/out.txt
 grep "nN15Gas:" ${RESULTSDIR}/out.txt >> cross_section/input/out.txt
 cp ${RESULTSDIR}/target_* cross_section/input/
 cp ${RESULTSDIR}/dPhi_info.txt cross_section/input/
+cp ${RESULTSDIR}/thetaCM* cross_section/input/
 cd cross_section
 #cd input/
 #cp out.txt ../arhive
 #cd -
 wait
+mkdir cases/
 root -l  "cross_section.C(${NEVENTS}, ${MINANGLE}, ${NTHREADS}, ${ITNUMBER}, ${STEP})"
 wait
 exit

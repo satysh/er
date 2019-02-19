@@ -1,3 +1,11 @@
+/********************************************************************************
+ *              Copyright (C) Joint Institute for Nuclear Research              *
+ *                                                                              *
+ *              This software is distributed under the terms of the             *
+ *         GNU Lesser General Public Licence version 3 (LGPL) version 3,        *
+ *                  copied verbatim in the file "LICENSE"                       *
+ ********************************************************************************/
+
 #include "ERElasticScattering.h"
 
 // STD
@@ -35,7 +43,7 @@ Double_t ThetaInvCDF(Double_t *x, Double_t *par)
 }
 //------------------------------------------------------------------
 
-ERElasticScattering::ERElasticScattering(TString name, Int_t run_index):
+ERElasticScattering::ERElasticScattering(TString name):
     ERDecay(name),
     fThetaFileName(""),
     fTheta1(0.),
@@ -52,11 +60,15 @@ ERElasticScattering::ERElasticScattering(TString name, Int_t run_index):
     fCDFminTargetIon(0.),
     fCDFmaxTargetIon(0.),
     fDetPos(0.),
+    fDetThetaWidth(0.),
     fIonMass(0.),
     fInteractNumInTarget(0),
     fCDFRangesSum(0.),
-    ionMassTrueOrFalseTester(kFALSE),
-    fRunIndex(run_index)
+    fThetaCMSumPri(0.),
+    fThetaCMSumTar(0.),
+    fNumOfPriIons(0),
+    fNumOfTarIons(0),
+    ionMassTrueOrFalseTester(kFALSE)
 {
 }
 
@@ -193,13 +205,19 @@ Bool_t ERElasticScattering::Stepping()
 
 
             Double_t theta = ThetaGen();
-            Double_t phi = fRnd->Uniform(fPhi1, fPhi2);
-            //Write_curent_theta(theta*RadToDeg());
-            LOG(INFO) << "Theta: " << theta*RadToDeg() << FairLogger::endl;
+            Double_t phi = fRnd->Uniform(fPhi1*DegToRad(), fPhi2*DegToRad());
+
             // In case of target ion registration
-            if (theta > fTheta2*DegToRad() || theta < fTheta1*DegToRad())
+            if (fIonTester)
             {
                 phi = phi + 180.*DegToRad();
+                fThetaCMSumTar += theta*RadToDeg();
+                fNumOfTarIons++;
+            }
+            else
+            {
+                fThetaCMSumPri += theta*RadToDeg();
+                fNumOfPriIons++;
             }
 
             if (fThetaFileName != "")
@@ -310,10 +328,12 @@ Double_t ERElasticScattering::ThetaGen()
         if (Rnd <= dF1)
         {
             curCDF = fCDFmin + Rnd;
+            fIonTester = kFALSE;
         }
         else
         {
             curCDF = fCDFminTargetIon + Rnd - dF1;
+            fIonTester = kTRUE;
         }
 
         theta = fThetaInvCDF->Eval(curCDF)*DegToRad();
@@ -324,50 +344,42 @@ Double_t ERElasticScattering::ThetaGen()
 void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
 {
     LOG(DEBUG) << "ERElasticScattering::RangesCalculate(" << iM << ", " << tM << ")" << FairLogger::endl;
-    Double_t radAngle = fDetPos*DegToRad();
+    Double_t rAng = fDetPos*DegToRad();
     Double_t ratio = iM/tM;
     Double_t ratio2 = ratio*ratio;
-    Double_t sin_theta = sin(radAngle);
-    Double_t sin2_theta = sin_theta*sin_theta;
-    Double_t cos_theta = cos(radAngle);
-    //Double_t cos2_theta = cos_theta*cos_theta;
-
-    Double_t thetaCMIon;
+    Double_t fDetThetaWRad = fDetThetaWidth*TMath::DegToRad(); // Detectors fDetThetaWRad
+    Double_t Radius = 218.;
+    // Primary Ion
     if (iM != tM)
-        thetaCMIon = acos( -ratio*sin2_theta + cos_theta*sqrt(1 - ratio2*sin2_theta));
+    {
+        fTheta1 = TMath::RadToDeg()*acos( -ratio*sin(rAng-fDetThetaWRad)*sin(rAng-fDetThetaWRad)
+                    + cos(rAng-fDetThetaWRad)*sqrt(1.-ratio2*sin(rAng-fDetThetaWRad)*sin(rAng-fDetThetaWRad)) );
+        fTheta2 = TMath::RadToDeg()*acos( -ratio*sin(rAng+fDetThetaWRad)*sin(rAng+fDetThetaWRad)
+                    + cos(rAng+fDetThetaWRad)*sqrt(1.-ratio2*sin(rAng+fDetThetaWRad)*sin(rAng+fDetThetaWRad)) );
+    }
     else
-        thetaCMIon = 2.*radAngle;
+    {
+        fTheta1 = TMath::RadToDeg()*2.*(rAng - fDetThetaWRad);
+        fTheta2 = TMath::RadToDeg()*2.*(rAng + fDetThetaWRad);
+    }
+    LOG(DEBUG) << "  N15: CMTheta1: " << fTheta1 << ", CMTheta2: " << fTheta2
+                << ", average value: " << 0.5*(fTheta2-fTheta1) + fTheta1 << FairLogger::endl;
 
-    globalTheta = thetaCMIon;
-    Double_t thetaCMTargetIon;
-    thetaCMTargetIon = 180. - 2*fDetPos;
-    fTheta1 = thetaCMIon*RadToDeg() - 2.;
-    fTheta2 = thetaCMIon*RadToDeg() + 2.;
-
-    fThetaTargetIon1 = thetaCMTargetIon - 2.;
-    fThetaTargetIon2 = thetaCMTargetIon + 2.;
-
-    fPhi1 = -6.*DegToRad()/*-asin( 2./218./sin(radAngle) )*/;
-    fPhi2 = 6.*DegToRad()/*asin( 2./218./sin(radAngle) )*/;
+    // Target Ion
+    fThetaTargetIon1 = 180. - 2.*(fDetPos + fDetThetaWidth);
+    fThetaTargetIon2 = 180. - 2.*(fDetPos - fDetThetaWidth);
 }
 
-Bool_t ERElasticScattering::Write_curent_theta(Double_t theta)
+Double_t ERElasticScattering::GetProbability(Double_t dTheta, Int_t primOrTarIon)
 {
-    LOG(INFO) << "ERElasticScattering::Write_curent_theta(" << theta << ")" << FairLogger::endl;
-    TString fileName;
-    fileName.Form("mc_learning/output/cur_theta_%d.txt", fRunIndex);
-    std::ofstream fout(fileName, std::ios_base::out);
-    if (!fout.is_open())
-    {
-        std::cerr << "ERElasticScattering::Write_curent_theta" << std::endl;
-        std::cerr << "mc_learning/output/cur_theta.txt isn't open" << std::endl;
-        return kFALSE;
-    }
-    if (theta != 0.)
-        fout << theta << std::endl;
-    fout.clear();
-    fout.close();
-    return kTRUE;
+    Double_t detPosCM;
+    if (primOrTarIon == 1) // for N15 == 1
+        detPosCM = 0.5*(fTheta1+fTheta2);
+    else                   // for B11
+        detPosCM = 0.5*(fThetaTargetIon1+fThetaTargetIon2);
+    Double_t CDF1 = fThetaCDF->Eval(detPosCM - dTheta);
+    Double_t CDF2 = fThetaCDF->Eval(detPosCM + dTheta);
+    return (CDF2 - CDF1);
 }
 
 ClassImp(ERElasticScattering)

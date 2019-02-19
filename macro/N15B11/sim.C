@@ -49,7 +49,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   target->SetGeometryFileName("N15.target.root");
   run->AddModule(target);
 
-  FairDetector* detector = new ERN15B11Detector("N15B11detector", kTRUE, 1, index);
+  FairDetector* detector = new ERN15B11Detector("N15B11detector", kTRUE, 1);
   detector->SetGeometryFileName("N15B11_detector.geo.root");
   run->AddModule(detector);
 
@@ -60,7 +60,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   Int_t Q = 3;
 
   ERDecayer* decayer = new ERDecayer();
-  ERElasticScattering* scattering = new ERElasticScattering("15Nto15N11B", index);
+  ERElasticScattering* scattering = new ERElasticScattering("15Nto15N11B");
 
   scattering->SetInputIon(Z,A,Q);
   scattering->SetTargetIon(5,11,5);
@@ -69,8 +69,9 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   scattering->SetStep(0.00001); //0.1 micron
   scattering->SetDecayVolume("targetB11"); //targetB11
   scattering->SetDetAngle(angle); // argumetn is an angle of detector position in Lab
+  scattering->SetDetThetaWidth(4.*0.262822833); // Detectors theta=2.*0.262822833 width*0.5
   //scattering->SetThetaRange(18.4, 19.4);
-  //scattering->SetPhiRange(0., 0.);
+  scattering->SetPhiRange(-20., 20.);
 
   decayer->AddDecay(scattering);
   run->SetDecayer(decayer);
@@ -82,7 +83,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   //Double32_t kin_energy = 0.043; // GeV
   //generator->SetPSigma(6.7835, 6.7835*0.003);
   //generator->SetKinESigma(kin_energy, 0.);
-  generator->SetKinERange(0.0427094, 0.0436017); // 0.0427094 : 0.0436017
+  generator->SetKinERange(0.043, 0.043); // 0.0427094 : 0.0436017
   //generator->SpreadingOnTarget();
 
   Double32_t theta = 0.;
@@ -92,7 +93,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   //generator->SetThetaRange(0., 0.); // -2 : 2
   generator->SetPhiRange(0., 180.); // 0 : 180
 
-  Double32_t distanceToTarget = 50.; // work: 50 cm, test 0.5 micron: 0.00005+0.00035
+  Double32_t distanceToTarget = 0.00005+0.00035; // work: 50 cm, test 0.5 micron: 0.00005+0.00035
   Double32_t sigmaOnTarget = 0.;
   //generator->SetSigmaXYZ(0., 0., -distanceToTarget, sigmaOnTarget, sigmaOnTarget);
   generator->SetBoxXYZ(-0.5, -0.5, 0.5, 0.5, -distanceToTarget); // Xmin = -0.5, Ymin = -0.5, Xmax = 0.5, , Ymax = 0.5, Z
@@ -118,7 +119,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   Int_t nSteps = -15000;
 
   //--- Runtime database ----------------------------------------------------
-  Bool_t kParameterMerged = kTRUE;
+  Bool_t kParameterMerged = kTRUE;    /** @brief Returns curent theta in CM for Primary Ion. **/
   FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
   parOut->open(parFile.Data());
   rtdb->setOutput(parOut);
@@ -141,6 +142,8 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   // cout << "Energy " << momentum << "; mass " << mass << endl;
   cout << "Interactions number in target: " << scattering->GetInteractNumInTarget() << endl;
   cout << "dPhi range: " << scattering->GetdPhi() << endl;
+  cout << "ThetaCM Mean for N15: " << scattering->GetThetaCMMeanPri() << endl;
+  cout << "ThetaCM Mean for B11: " << scattering->GetThetaCMMeanTar() << endl;
   cout.precision(12);
   cout << "summ: "<< scattering->GetCDFRangesSum() << endl;
 }
