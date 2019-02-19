@@ -1,7 +1,7 @@
 void Draw_theory(TCanvas* cn, TLegend* leg);
 void Draw_experiment(TCanvas* cn, TLegend* leg);
 
-void merge_cases(Int_t n = 6, Int_t option = 1)
+void merge_cases(Int_t n = 6, Int_t option = 1, Int_t start = 1)
 {
     TCanvas* canv = new TCanvas("canv", "canv", 1000, 800);
     canv->SetLogy();
@@ -17,7 +17,7 @@ void merge_cases(Int_t n = 6, Int_t option = 1)
     Double_t** B11sigma = new Double_t*[n];
     TGraph** simN15Gr = new TGraph*[n]; 
     TGraph** simB11Gr = new TGraph*[n];
-    for (Int_t i = 0; i < n; i++)
+    for (Int_t i = start; i < n; i++)
     {
     	if (option == 1)
     	{

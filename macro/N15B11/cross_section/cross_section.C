@@ -62,7 +62,9 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     }
 
     // Output file
-    ofstream fout("output/N15_cross_and_theta.txt");
+    TString N15OutFileName;
+    N15OutFileName.Form("cases/case_%d_N15_cross_and_theta.txt", case_n);
+    ofstream fout(N15OutFileName);
     if (!fout.is_open())
     {
         cerr << "Error: missing output directory\n";
@@ -144,7 +146,9 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     N15_or_B11 = kFALSE;
     delete []ThetaCMAr;
     ThetaCMAr = GetThetaCMAr(anglesNumbers, kFALSE);
-    fout.open("output/B11_cross_and_theta.txt");
+    TString B11OutFileName;
+    B11OutFileName.Form("cases/case_%d_B11_cross_and_theta.txt", case_n);
+    fout.open(B11OutFileName);
     if (!fout.is_open())
     {
         cerr << "Error: missing output directory" << endl;

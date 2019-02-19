@@ -11,9 +11,9 @@ OUTDIR=output_digi_parallel
 GRAPHSOUTDIR=digi_graphs_parallel
 
 # Variables
-NEVENTS=100
-MINANGLE=5
-MAXANGLE=5
+NEVENTS=1000
+MINANGLE=35
+MAXANGLE=35
 NTHREADS=16
 
 # Digitization add or no add
@@ -238,6 +238,7 @@ cd cross_section
 #cp out.txt ../arhive
 #cd -
 wait
+mkdir cases/
 root -l  "cross_section.C(${NEVENTS}, ${MINANGLE}, ${NTHREADS}, ${ITNUMBER}, ${STEP})"
 wait
 exit
