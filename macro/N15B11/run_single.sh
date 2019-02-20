@@ -22,10 +22,8 @@ cd ../../geometry/
 rm -fv N15B11_detector.geo.root
 cd -
 
-cd mc_learning/output/
-rm -fv *.txt
-cd -	
-echo -e "\e[1m\e[32m========== Cleanup finished  === Angle( ${ANGEL} ) ============ \e[0m"
+rm -fv output/*
+rm -fv mc_learning/input/*
 
 if [ -d geo/ ]; then
     cd geo/

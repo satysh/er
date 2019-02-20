@@ -13,8 +13,8 @@ GRAPHSOUTDIR=digi_graphs_parallel
 # Variables
 NEVENTS=1000
 MINANGLE=5
-MAXANGLE=10
-NTHREADS=7
+MAXANGLE=6
+NTHREADS=16
 
 # Digitization add or no add
 TOADDDIGI='yes'
@@ -64,7 +64,7 @@ date > ${RESULTSDIR}/out.txt
 if [ -d mc_learning ]; then
 	cd mc_learning
 	if [ -d input ]; then
-		rm -rf input
+		rm -rf input/*
 	else
 		mkdir input
 	fi
@@ -100,8 +100,8 @@ for IT in $(seq 1 ${ITNUMBER}); do
 	cd -
 
 	if [ -d mc_learning/output/ ];then
-		cd mc_learning/output/
-		rm -fv *
+		cd mc_learning/input/
+		rm -fv interact_thetas_*
 		cd -
 	fi
 	echo -e "\e[1m\e[32m========== Cleanup finished  === Angle( ${ANG} ) ============ \e[0m"
