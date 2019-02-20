@@ -24,6 +24,7 @@ public:
      ** @param name   reaction name
     **/
     ERElasticScattering(TString name);
+    ERElasticScattering(TString name, Int_t index);
 
     /** @brief Destructor **/
     ~ERElasticScattering();
@@ -127,6 +128,7 @@ private:
     Double_t        fThetaCMSumPri;             ///< Sum of Thetas CM for primary Ion hit to the target
     Double_t        fThetaCMSumTar;             ///< Sum of Thetas CM for target Ion hit to the target
 
+    Int_t           fRanIndex;
     Int_t           fInteractNumInTarget;       ///< Interactions counter in target
     Int_t           fNumOfPriIons;              ///< Interactions counter of primary ions in target
     Int_t           fNumOfTarIons;              ///< Interactions counter of target ions in target
@@ -141,7 +143,7 @@ private:
      ** @param tM target ion mass.
     **/
     void RangesCalculate(Double_t iM, Double_t tM);
-
+    void Write_Cur_Theta(Double_t th);
     ClassDef(ERElasticScattering, 1);
 };
 

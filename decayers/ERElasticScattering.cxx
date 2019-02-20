@@ -71,7 +71,11 @@ ERElasticScattering::ERElasticScattering(TString name):
     ionMassTrueOrFalseTester(kFALSE)
 {
 }
-
+ERElasticScattering::ERElasticScattering(TString name, Int_t index):
+    ERElasticScattering(name)
+{
+    fRanIndex = index;
+}
 ERElasticScattering::~ERElasticScattering()
 {
 }
@@ -206,7 +210,7 @@ Bool_t ERElasticScattering::Stepping()
 
             Double_t theta = ThetaGen();
             Double_t phi = fRnd->Uniform(fPhi1*DegToRad(), fPhi2*DegToRad());
-
+            Write_Cur_Theta(theta);
             // In case of target ion registration
             if (fIonTester)
             {
@@ -383,3 +387,12 @@ Double_t ERElasticScattering::GetProbability(Double_t dTheta, Int_t primOrTarIon
 }
 
 ClassImp(ERElasticScattering)
+
+void ERElasticScattering::Write_Cur_Theta(Double_t th)
+{
+    TString outFileName;
+    outFileName.Form("mc_learning/input/cur_theta_%d.txt", fRanIndex);
+    std::ofstream fout(outFileName);
+    fout << th*TMath::RadToDeg() << std::endl;
+    fout.close();
+}

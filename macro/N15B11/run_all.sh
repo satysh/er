@@ -12,8 +12,8 @@ GRAPHSOUTDIR=digi_graphs_parallel
 
 # Variables
 NEVENTS=1000
-MINANGLE=35
-MAXANGLE=35
+MINANGLE=5
+MAXANGLE=10
 NTHREADS=7
 
 # Digitization add or no add
@@ -34,7 +34,7 @@ then
 fi
 
 #Calculate step and Interaction numbers
-a=3
+a=1
 b=1
 STEP=$(echo "$a/$b" | bc -l) #STEP=a/b
 ITNUMBER=$(echo "1+($MAXANGLE-$MINANGLE)/$STEP" | bc -l)
@@ -61,30 +61,19 @@ else
 fi
 date > ${RESULTSDIR}/out.txt
 
-if [ -d mc_learning/result ];then
-	cd mc_learning/result
-	rm -fv *.root
+if [ -d mc_learning ]; then
+	cd mc_learning
+	if [ -d input ]; then
+		rm -rf input
+	else
+		mkdir input
+	fi
 	cd -
-	if [ -d mc_learning/result/thetas/ ];then
-		cd mc_learning/result/thetas/
-		rm -fv *
-		cd -
-	else
-		mkdir mc_learning/result/thetas/
-	fi
-
-	if [ -d mc_learning/result/histograms/ ];then
-		cd mc_learning/result/histograms/
-		rm -fv *
-		cd -
-	else
-		mkdir mc_learning/result/histograms/
-	fi
 else
-	mkdir mc_learning/result
-	mkdir mc_learning/result/thetas/
-	mkdir mc_learning/result/histograms/
+	mkdir mc_learning
+	mkdir mc_learning/input
 fi
+
 #ITNUMBER=3
 for IT in $(seq 1 ${ITNUMBER}); do
     ####################################### Simulation #######################################
@@ -170,13 +159,14 @@ for IT in $(seq 1 ${ITNUMBER}); do
 
     wait
     ####################################### MC analysis #######################################
-	if [ -d mc_learning/output/ ];then
-        	cd mc_learning/output/
+	if [ -d mc_learning/input/ ];then
+        	cd mc_learning/input/
 		for THR in $(seq 1 ${NTHREADS});do
-		    cat interact_thetas_${THR}.txt >> ../result/thetas/interact_thetas_${ANG}.txt
+		    cat interact_thetas_${THR}.txt >> all_interact_thetas_${ANG}.txt
 		done
           	cd -
-   fi
+
+        fi
 
 	wait
     ####################################### ThetaCM write ######################################
