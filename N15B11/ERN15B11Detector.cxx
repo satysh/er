@@ -317,13 +317,13 @@ void ERN15B11Detector::StartNewPoint(void)
 	fPosIn.Vect().GetXYZ(globalPos);
 	matrix.MasterToLocal(globalPos, localPos);
 	fPosInLocal.SetXYZ(localPos[0], localPos[1], localPos[2]);
-/*
+
 	if (!tester)
 	{
 		Write_curent_theta();
 		tester = kTRUE;
 	}
-*/
+
 }
 
 void ERN15B11Detector::FinishNewPoint(TClonesArray* p_collection)
@@ -354,27 +354,27 @@ ERPoint* ERN15B11Detector::AddPoint(TClonesArray* p_collection)
 Bool_t ERN15B11Detector::Write_curent_theta()
 {
     TString finFileName;
-    finFileName.Form("mc_learning/output/cur_theta_%d.txt", fRunIndex);
+    finFileName.Form("mc_learning/input/cur_theta_%d.txt", fRunIndex);
     std::ifstream fin(finFileName, std::ios_base::in);
     if (!fin.is_open())
     {
     	std::cerr << "ERN15B11Detector::Write_curent_theta" << std::endl;
-        std::cerr << "mc_learning/output/cur_theta_" << fRunIndex << ".txt isn't open" << std::endl;
+        std::cerr << "mc_learning/input/cur_theta_" << fRunIndex << ".txt didn't open" << std::endl;
         return kFALSE;
     }
     Double_t theta;
     fin >> theta;
-	std::cout << "ERN15B11Detector::Write_curent_theta: " << theta << std::endl;
-	fin.clear();
+    fin.clear();
 	fin.close();
-
+	std::cout << "ERN15B11Detector::Write_curent_theta: " << theta << std::endl;
+	
 	TString outFileName;
-	outFileName.Form("mc_learning/output/interact_thetas_%d.txt", fRunIndex);
+	outFileName.Form("mc_learning/input/interact_thetas_%d.txt", fRunIndex);
     std::ofstream fout(outFileName, std::ios_base::app);
     if (!fout.is_open())
     {
     	std::cerr << "ERN15B11Detector::Write_curent_theta" << std::endl;
-        std::cerr << "mc_learning/output/interact_thetas_" << fRunIndex << ".txt isn't open" << std::endl;
+        std::cerr << "mc_learning/input/interact_thetas_" << fRunIndex << ".txt didn't open" << std::endl;
         return kFALSE;
     }
     fout << theta << std::endl;
