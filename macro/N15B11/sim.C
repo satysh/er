@@ -83,7 +83,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   //Double32_t kin_energy = 0.043; // GeV
   //generator->SetPSigma(6.7835, 6.7835*0.003);
   //generator->SetKinESigma(kin_energy, 0.);
-  generator->SetKinERange(0.043, 0.043); // 0.0427094 : 0.0436017
+  generator->SetKinERange(0.0427094, 0.0436017); // 0.0427094 : 0.0436017
   //generator->SpreadingOnTarget();
 
   Double32_t theta = 0.;
@@ -93,7 +93,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   //generator->SetThetaRange(0., 0.); // -2 : 2
   generator->SetPhiRange(0., 180.); // 0 : 180
 
-  Double32_t distanceToTarget = 0.00005+0.00035; // work: 50 cm, test 0.5 micron: 0.00005+0.00035
+  Double32_t distanceToTarget = 50.; // work: 50 cm, test 0.5 micron: 0.00005+0.00035
   Double32_t sigmaOnTarget = 0.;
   //generator->SetSigmaXYZ(0., 0., -distanceToTarget, sigmaOnTarget, sigmaOnTarget);
   generator->SetBoxXYZ(-0.5, -0.5, 0.5, 0.5, -distanceToTarget); // Xmin = -0.5, Ymin = -0.5, Xmax = 0.5, , Ymax = 0.5, Z
