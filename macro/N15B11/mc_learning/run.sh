@@ -2,8 +2,8 @@
 
 IONNAME=N15
 BEGANGLE=5
-ENDANGLE=6
-case_n=1
+ENDANGLE=35
+case_n=4
 if [ -d output ];then
 	rm -rf output/*
 else
@@ -17,6 +17,9 @@ if [ -d cases ];then
 else
         mkdir cases/
 fi
+
+rm -fv input/*
+cp archive/case_${case_n}/${IONNAME}/* input/
 
 root -l -b -q "rootFileWriter.C(\"${IONNAME}\", ${case_n}, ${BEGANGLE}, ${ENDANGLE})"
 
