@@ -11,7 +11,7 @@ void stdDevsDraw(TString ionName = "", Int_t startCase = 1, Int_t endCase = 8, I
 	//Angles array form
 	TVectorF angles(endAng-startAng+1);
 	for (Int_t i =0; i < endAng-startAng+1; i++)
-		angles(i) = (Float_t)(i+startAng); 
+		angles(i) = (Float_t)(i+startAng);
 	// Legend form
 	TLegend* leg = new TLegend(1., 1., 0.9, 0.7);
 	leg->SetName("Legend");
@@ -34,7 +34,7 @@ void stdDevsDraw(TString ionName = "", Int_t startCase = 1, Int_t endCase = 8, I
 
 		for (Int_t j = startAng; j < endAng+1; j++)
 		{
-			cout << " ang: " << setw(2) << j << ", StdDev = "; 
+			cout << " ang: " << setw(2) << j << ", StdDev = ";
 			TString curTreeName;
 			curTreeName.Form("ang_%d", j);
 			TTree* tree = (TTree*)file->Get(curTreeName);
@@ -71,7 +71,7 @@ void stdDevsDraw(TString ionName = "", Int_t startCase = 1, Int_t endCase = 8, I
 		mg->Add(curGraph);
 
 		TString legName;
-		legName.Form("Case: %d", i-startCase+1);
+		legName.Form("Case: %d", i);
 		leg->AddEntry(curGraph, legName, "pl");
 
 		file->Close();

@@ -3,7 +3,7 @@
 IONNAME=N15
 BEGANGLE=5
 ENDANGLE=35
-case_n=4
+case_n=1
 if [ -d output ];then
 	rm -rf output/*
 else
