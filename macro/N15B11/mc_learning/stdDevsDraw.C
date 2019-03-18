@@ -90,6 +90,7 @@ void stdDevsDraw(TString ionName = "", Int_t startCase = 1, Int_t endCase = 8, I
 	mgX->SetTitleSize(0.04);
 	mgY->SetTitleSize(0.04);
 	leg->Draw();
+	leg->SetHeader(ionName);
 	leg->SetLineWidth(5);
 	gPad->Update();
 	TFile* outFile = new TFile("output/stdDev.root", "recreate");
