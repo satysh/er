@@ -348,7 +348,6 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
     Double_t ratio = iM/tM;
     Double_t ratio2 = ratio*ratio;
     Double_t fDetThetaWRad = fDetThetaWidth*TMath::DegToRad(); // Detectors fDetThetaWRad
-    Double_t Radius = 218.;
     // Primary Ion
     if (iM != tM)
     {
@@ -368,6 +367,9 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
     // Target Ion
     fThetaTargetIon1 = 180. - 2.*(fDetPos + fDetThetaWidth);
     fThetaTargetIon2 = 180. - 2.*(fDetPos - fDetThetaWidth);
+
+    LOG(DEBUG) << "  B11: CMTheta1: " << fThetaTargetIon1 << ", CMTheta2: " << fThetaTargetIon2
+                << ", average value: " << 0.5*(fThetaTargetIon2-fThetaTargetIon1) + fThetaTargetIon1 << FairLogger::endl;
 }
 
 Double_t ERElasticScattering::GetProbability(Double_t dTheta, Int_t primOrTarIon)
