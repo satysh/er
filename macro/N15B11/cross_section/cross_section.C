@@ -24,7 +24,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     //Double_t detH = 4.; // mm
     TCanvas* canv = new TCanvas("canv", "canv", 1000, 800);
     canv->SetLogy();
-    TLegend* leg = new TLegend(1., 1., 0.80, 0.80);
+    TLegend* leg = new TLegend(0.9, 0.9, 0.7, 0.7);
 
     if ( !Draw_Base_Cross_Section(canv, leg) ) {
         cerr << "Draw_Cross_Section() Error " << endl;
@@ -117,10 +117,11 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     simN15Gr->Draw("P");
     simN15Gr->SetMarkerStyle(8);
     simN15Gr->SetMarkerColor(4);
+    simN15Gr->SetMarkerSize(1.7);
 
     leg->AddEntry(simN15Gr, "N15 Points", "p");
 
-    //N15_B11_draw = kTRUE;
+    N15_B11_draw = kTRUE;
     if (N15_B11_draw)
     {
         Ar = Fill_Arrays(anglesNumbers, N15_B11_draw);
@@ -184,6 +185,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     simB11Gr->Draw("P");
     simB11Gr->SetMarkerStyle(21);
     simB11Gr->SetMarkerColor(1);
+    simB11Gr->SetMarkerSize(1.7);
 
     leg->AddEntry(simB11Gr, "B11 Points", "p");
 
@@ -192,8 +194,22 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     headerStr.Form("Log scale, case %d", case_n);
     leg->SetHeader(headerStr);
     leg->Draw();
+    leg->SetLineWidth(5);
+    //gPad->SetGrid(4, 4);
+    gPad->SetFrameLineWidth(5);
+    gPad->Update();
 
-    gPad->SetGrid(4, 4);
+    TLatex latex;
+    latex.SetTextAlign(12);
+    latex.SetTextSize(0.035);
+    latex.SetTextAngle(90.);
+    latex.DrawLatex(-10.50, 1e-5, "#frac{d#sigma}{d#Omega}  (mb/sr)");
+    latex.SetTextAngle(0.);
+    latex.SetTextSize(0.05);
+    latex.DrawLatex(90., 1e-9/7., "#theta_{c.m}");
+    latex.SetTextSize(0.03);
+    latex.DrawLatex(102., 1e-9/6., "(deg)");
+    
     canv->SaveAs("result/resultGr.pdf");
 }
 //------------------------------------------------------------------------------------------------------------------
@@ -233,13 +249,17 @@ bool Draw_Base_Cross_Section(TCanvas* cn, TLegend* leg)
     sigmaGr = new TGraph(tet, sigma);
 
     cn->cd();
-    TF1* sigmaFun = new TF1("Cross-Section", Sigma, 4.5, 180., 0);
+    TF1* sigmaFun = new TF1("", Sigma, 4.5, 180., 0);
     sigmaFun->Draw("C");
-    sigmaFun->GetXaxis()->SetTitle("theta");
-    sigmaFun->GetYaxis()->SetTitle("cross-section");
-    sigmaFun->SetLineWidth(4);
+    sigmaFun->SetLineWidth(5);
     sigmaFun->SetMarkerStyle(8);
-    sigmaFun->SetMinimum(1.0e-11);
+    sigmaFun->SetMinimum(1.0e-9);
+    TAxis* mgX = (TAxis*)sigmaFun->GetXaxis();
+    TAxis* mgY = (TAxis*)sigmaFun->GetYaxis();
+    mgX->SetLabelSize(0.05);
+    mgY->SetLabelSize(0.05);
+    mgX->SetTitleSize(0.04);
+    mgY->SetTitleSize(0.05);
     leg->AddEntry(sigmaFun, "Theory", "l");
     f.close();
     return kTRUE;
