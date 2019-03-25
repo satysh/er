@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### Variables ###
-RUNNUM=10
+RUNNUM=1
 TESTANGLE=17
 NEVENTS=10000
 NTRD=7
@@ -31,7 +31,14 @@ if [ -d ${OUTDIR} ];then
 else
 	mkdir ${OUTDIR}
 fi
+rm -fv ../../../../geometry/N15B11_detector.geo.root
 echo -e "\e[1m\e[32m========== Cleanup finished   =========== \e[0m"
+
+### Build geometry ###
+cd ../../geo/
+root -l -b -q "create_N15B11_detector_geo.C(${TESTANGLE})"
+cd -
+echo -e "\e[1m\e[32m========== Build geometry finished   =========== \e[0m"
 
 let RUNNUM="${RUNNUM} - 1"
 ### Loop over the runs
