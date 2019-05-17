@@ -57,7 +57,7 @@ public:
     /** @brief Defines theta position for detector in Lab.
      ** @param angle theta position for detector in Lab.
     **/
-    void SetDetAngle(Double_t angle)  { fDetPos = angle; }
+    void SetDetTheta(Double_t angle)  { fDetPos = angle; }
 
     /** @brief Defines theta width for detector in Lab.
      ** @param  dTheta theta width for detector in Lab.

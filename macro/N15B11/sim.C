@@ -68,7 +68,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   scattering->SetUniformPos(-0.00035,0.00035);
   scattering->SetStep(0.00001); //0.1 micron
   scattering->SetDecayVolume("targetB11"); //targetB11
-  scattering->SetDetAngle(angle); // argumetn is an angle of detector position in Lab
+  scattering->SetDetTheta(angle); // argumetn is an angle of detector position in Lab
   scattering->SetDetThetaWidth(4.*0.262822833); // Detectors theta width
   //scattering->SetThetaRange(18.4, 19.4);
   scattering->SetPhiRange(-20., 20.);
