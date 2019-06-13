@@ -2,6 +2,9 @@
 
 echo -n "Print case number to draw cross-section: "
 read case_n
+
+cp -r archive/ati/case_* archive/
+
 if [ -d input/ ];then
 	cd input/
 	rm -fv out* target_* theta* dPhi_*
@@ -9,6 +12,12 @@ if [ -d input/ ];then
 else
 	echo "Missing important directory input/."
 	exit
+fi
+
+if [ -d cases/ ];then
+  rm -rf cases/*
+else
+  mkdir cases/
 fi
 
 if [ -d archive/ ];then
@@ -53,5 +62,7 @@ if [ $n15 == 1 ];then
 	fi
 fi
 echo "$n15 $b11"
+
+rm -rv archive/case_*
 
 root -l "cross_section.C(0, 5, 0, 31, 1, ${case_n}, \"output\", 0)"

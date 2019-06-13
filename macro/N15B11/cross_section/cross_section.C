@@ -122,7 +122,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     simN15Gr->SetMarkerColor(4);
     simN15Gr->SetMarkerSize(1.7);
 
-    leg->AddEntry(simN15Gr, "N15 Points", "p");
+    leg->AddEntry(simN15Gr, "15N", "p");
 
     N15_B11_draw = kTRUE;
     if (N15_B11_draw)
@@ -192,7 +192,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     simB11Gr->SetMarkerColor(1);
     simB11Gr->SetMarkerSize(1.7);
 
-    leg->AddEntry(simB11Gr, "B11 Points", "p");
+    leg->AddEntry(simB11Gr, "11B", "p");
 
     canv->cd();
     TString headerStr;
