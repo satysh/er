@@ -1,3 +1,18 @@
+TGraph* thetaCDFGr = NULL;
+TGraph* thetaInvCDFGr = NULL;
+
+//-------------------------Globals----------------------------------
+Double_t globalTheta;
+Double_t ThetaCDF(Double_t *x, Double_t *par)
+{
+    return thetaCDFGr->Eval(x[0]);
+}
+
+Double_t ThetaInvCDF(Double_t *x, Double_t *par)
+{
+    return thetaInvCDFGr->Eval(x[0]);
+}
+
 struct SArrays
 {
     Double_t* sAr;
@@ -17,6 +32,35 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
 
                   Int_t case_n = 1, TString workDir = "output", Bool_t N15_B11_draw = kFALSE)
 {
+
+        TString path = "input/nrv.txt";
+        std::ifstream f;
+        f.open(path.Data());
+        if (!f.is_open())
+        {
+            cerr << "Can't open file " << path << endl;
+            return ;
+        }
+
+        Int_t nPoints = std::count(std::istreambuf_iterator<char>(f),
+                               std::istreambuf_iterator<char>(), '\n');
+        f.seekg(0, std::ios::beg);
+        TVectorD tet(nPoints);
+        TVectorD sigma(nPoints);
+
+        Int_t j = 0;
+        while (!f.eof())
+        {
+            if (j == nPoints) break;
+            f >> tet(j) >> sigma(j);
+            j++;
+        }
+
+        thetaCDFGr = new TGraph(tet, sigma);
+        thetaInvCDFGr = new TGraph(sigma, tet);
+
+        TF1* fThetaCDF = new TF1("thetaCDF", ThetaCDF, 0., 180., 0);
+        TF1* fThetaInvCDF = new TF1("thetaInvCDF", ThetaInvCDF, 0., 1., 0);
     //Double_t norm = 1.;
     nEvents = nEvents*nThreads;
     Double_t dTheta = 0.262822833*TMath::DegToRad();
@@ -74,7 +118,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     // Get thetaCM values for N15
     Bool_t N15_or_B11 = kTRUE;
     Double_t* ThetaCMAr = GetThetaCMAr(anglesNumbers, N15_or_B11);
-
+    Double_t Integral_15N = 0.;
     Int_t i = 0;
     Double_t ratio = 1.3626837426803;
     TVectorD sigmaCMN15(anglesNumbers);
@@ -111,7 +155,11 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         if (dphi == 0.) dphi = 1.;
         sigmaCMN15(i) = (Double_t)nN15Ar[i]*summAr[i]*dphi / (nEvents*2.*TMath::Pi()*TMath::Sin(TMath::DegToRad()*tetN15(i))*(theta2-theta1));
         fout << tetN15(i) << "\t" << sigmaCMN15(i) << endl;
+        Integral_15N += fThetaCDF->Eval(tetN15(i)) / sigmaCMN15(i);
+        cout << "The: " << fThetaCDF->Eval(tetN15(i)) << ", sig: " << sigmaCMN15(i) << ", Int: " << fThetaCDF->Eval(tetN15(i)) / sigmaCMN15(i) << endl;
+        sigmaCMN15(i) *= 1.27;
     }
+    Integral_15N /= anglesNumbers;
     fout.clear();
     fout.close();
     TGraph* simN15Gr = new TGraph(tetN15, sigmaCMN15);
@@ -155,6 +203,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         cerr << "Error: missing output directory" << endl;
         return;
     }
+    Double_t Integral_11B = 0.;
     TVectorD sigmaCMB11(anglesNumbers);
     TVectorD tetB11(anglesNumbers);
     Int_t memNEv = nEvents;
@@ -179,11 +228,17 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         Double_t dphi = dPhiAr[i]/dPhiDet;
         if (dphi == 0.) dphi = 1.;
         sigmaCMB11(i) = (Double_t)nB11Ar[i]*summAr[i]*dphi / (nEvents*2.*TMath::Pi()*TMath::Sin(TMath::DegToRad()*tetB11(i))*(-theta2+theta1));
+        fout.precision(8);
         fout << tetB11(i) << "\t" << sigmaCMB11(i) << endl;
+        //cout << tetB11(i) << "\t" << sigmaCMB11(i) << endl;
+        Integral_11B += fThetaCDF->Eval(tetB11(i)) / sigmaCMB11(i);
+        sigmaCMB11(i) *= 1.19;
     }
+    Integral_11B /= anglesNumbers;
     fout.clear();
     fout.close();
-
+    cout << "Integral_15N: " << Integral_15N << endl;
+    cout << "Integral_11B: " << Integral_11B << endl;
     TGraph* simB11Gr = new TGraph(tetB11, sigmaCMB11);
 
     canv->cd();
@@ -197,8 +252,8 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     canv->cd();
     TString headerStr;
     headerStr.Form("Log scale, case %d", case_n);
-    leg->SetHeader(headerStr);
-    leg->Draw();
+    //leg->SetHeader(headerStr);
+    //leg->Draw();
     leg->SetLineWidth(5);
     //gPad->SetGrid(4, 4);
     gPad->SetFrameLineWidth(5);
@@ -242,15 +297,28 @@ bool Draw_Base_Cross_Section(TCanvas* cn, TLegend* leg)
     f.seekg(0, std::ios::beg);
     TVectorD tet(anglesNumbers);
     TVectorD sigma(anglesNumbers);
-
+    cout << "======= Draw_Base_Cross_Section() =======" << endl;
+    Double_t Integral_15N = 0.;
+    Double_t Integral_11B = 0.;
     Int_t i = 0;
     while (!f.eof())
     {
       if (i == anglesNumbers) break;
       f >> tet(i) >> sigma(i);
+      if ((tet(i) >= 11.1432) && (tet(i) <= 86.1495))
+      {
+      	Integral_15N += sigma(i);
+      	//cout << "tet(" << i << ") = " << tet(i) << ", sigma = " << sigma(i) << endl;
+      }
+      else if ((tet(i) >= 110.127) && (tet(i) <= 169.887))
+      {
+      	Integral_11B += sigma(i);
+      	//cout << "tet(" << i << ") = " << tet(i) << ", sigma = " << sigma(i) << endl;
+      }
       i++;
     }
-
+    cout << "Integral_15N: " << Integral_15N << endl;
+    cout << "Integral_11B: " << Integral_11B << endl;
     sigmaGr = new TGraph(tet, sigma);
 
     cn->cd();
@@ -258,7 +326,7 @@ bool Draw_Base_Cross_Section(TCanvas* cn, TLegend* leg)
     sigmaFun->Draw("C");
     sigmaFun->SetLineWidth(5);
     sigmaFun->SetMarkerStyle(8);
-    sigmaFun->SetMinimum(1.0e-9);
+    sigmaFun->SetMinimum(1.0e-6);
     TAxis* mgX = (TAxis*)sigmaFun->GetXaxis();
     TAxis* mgY = (TAxis*)sigmaFun->GetYaxis();
     mgX->SetLabelSize(0.05);
