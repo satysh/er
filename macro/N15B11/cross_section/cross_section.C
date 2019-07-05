@@ -269,7 +269,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     latex.DrawLatex(90., 1e-9/7., "#theta_{c.m}");
     latex.SetTextSize(0.03);
     latex.DrawLatex(102., 1e-9/6., "(deg)");
-    
+
     canv->SaveAs("result/resultGr.pdf");
 }
 //------------------------------------------------------------------------------------------------------------------
@@ -326,7 +326,7 @@ bool Draw_Base_Cross_Section(TCanvas* cn, TLegend* leg)
     sigmaFun->Draw("C");
     sigmaFun->SetLineWidth(5);
     sigmaFun->SetMarkerStyle(8);
-    sigmaFun->SetMinimum(1.0e-6);
+    sigmaFun->SetMinimum(1.0e-9);
     TAxis* mgX = (TAxis*)sigmaFun->GetXaxis();
     TAxis* mgY = (TAxis*)sigmaFun->GetYaxis();
     mgX->SetLabelSize(0.05);
