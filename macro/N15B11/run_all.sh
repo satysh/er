@@ -12,9 +12,9 @@ GRAPHSOUTDIR=digi_graphs_parallel
 
 # Variables
 NEVENTS=10000
-MINANGLE=5
+MINANGLE=35
 MAXANGLE=35
-NTHREADS=16
+NTHREADS=7
 
 # Digitization add or no add
 TOADDDIGI='yes'

@@ -2,7 +2,7 @@
 
 OUTDIR=output
 NEVENTS=100
-ANGEL=20
+ANGEL=13
 
 cd ../../../build
 make -j3
