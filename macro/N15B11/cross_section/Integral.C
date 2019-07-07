@@ -28,7 +28,7 @@ void Integral(TString fileName = "", Int_t begin = 5, Int_t end = 35) {
   while (!f.eof()) {
     if (i == nPoints) break;
     f >> tet(i) >> sigma(i);
-    cerr << i << ": " << tet(i) << "\t" << sigma(i) << endl;
+    //cerr << i << ": " << tet(i) << "\t" << sigma(i) << endl;
     i++;
   }
   f.close();
@@ -39,7 +39,7 @@ void Integral(TString fileName = "", Int_t begin = 5, Int_t end = 35) {
   TF1* fThetaCDF = new TF1("thetaCDF", ThetaCDF, 0., 180., 0);
   TF1* fThetaInvCDF = new TF1("thetaInvCDF", ThetaInvCDF, 0., 1., 0);
 
-  Double_t dStep = 0.01;
+  Double_t dStep = 0.001;
   Double_t Integr = 0.;
   Double_t curAng = (Double_t)begin;
   Double_t limit = (Double_t)end;
