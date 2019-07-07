@@ -2,7 +2,8 @@
 NEVENTS=1000
 STARTANG=5
 NTHREADS=16
-ANGNUM=31 #31
+ANGNUM=$(grep -cv "cw,c;" input/thetaCMN15.txt)
+echo "ANGNUM: ${ANGNUM}"
 if [ -d result ]; then
 	cd result
         rm -fv resultGr.pdf

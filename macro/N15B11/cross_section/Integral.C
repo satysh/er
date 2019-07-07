@@ -31,7 +31,8 @@ void Integral(TString fileName = "", Int_t begin = 5, Int_t end = 35) {
     cerr << i << ": " << tet(i) << "\t" << sigma(i) << endl;
     i++;
   }
-
+  f.close();
+  
   thetaCDFGr = new TGraph(tet, sigma);
   thetaInvCDFGr = new TGraph(sigma, tet);
 
