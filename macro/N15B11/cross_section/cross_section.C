@@ -157,7 +157,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         fout << tetN15(i) << "\t" << sigmaCMN15(i) << endl;
         Integral_15N += fThetaCDF->Eval(tetN15(i)) / sigmaCMN15(i);
         cout << "The: " << fThetaCDF->Eval(tetN15(i)) << ", sig: " << sigmaCMN15(i) << ", Int: " << fThetaCDF->Eval(tetN15(i)) / sigmaCMN15(i) << endl;
-        sigmaCMN15(i) *= 1.27;
+        sigmaCMN15(i) *= 1.13034;
     }
     Integral_15N /= anglesNumbers;
     fout.clear();
@@ -172,7 +172,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
 
     leg->AddEntry(simN15Gr, "15N", "p");
 
-    //N15_B11_draw = kTRUE;
+    N15_B11_draw = kTRUE;
     if (N15_B11_draw)
     {
         Ar = Fill_Arrays(anglesNumbers, N15_B11_draw);
@@ -232,7 +232,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         fout << tetB11(i) << "\t" << sigmaCMB11(i) << endl;
         //cout << tetB11(i) << "\t" << sigmaCMB11(i) << endl;
         Integral_11B += fThetaCDF->Eval(tetB11(i)) / sigmaCMB11(i);
-        sigmaCMB11(i) *= 1.19;
+        //sigmaCMB11(i) *= 1.19;
     }
     Integral_11B /= anglesNumbers;
     fout.clear();
@@ -268,7 +268,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
     latex.SetTextSize(0.05);
     latex.DrawLatex(90., 1e-9/7., "#theta_{c.m}");
     latex.SetTextSize(0.03);
-    latex.DrawLatex(102., 1e-9/6., "(deg)");
+    latex.DrawLatex(101., 1e-9/6., "[deg]");
 
     canv->SaveAs("result/resultGr.pdf");
 }
