@@ -7,7 +7,7 @@ ENDANGLE=35
 echo -n "Type case number: "
 read case_n
 
-cp -r archive/phi/${IONNAME}/case_${case_n}/ archive/
+#cp -r archive/phi/${IONNAME}/case_${case_n}/ archive/
 
 if [ -d output ];then
 	rm -rf output/*
@@ -35,5 +35,5 @@ root -l -b -q "rootFileWriter.C(\"${IONNAME}\", ${case_n}, ${BEGANGLE}, ${ENDANG
 
 cp -f output/${IONNAME}_case_${case_n}.root cases/
 
-rm -r archive/phi/${IONNAME}/case_${case_n}/ 
+#rm -r archive/phi/${IONNAME}/case_${case_n}/ 
 
