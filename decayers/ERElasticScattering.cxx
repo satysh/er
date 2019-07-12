@@ -164,12 +164,12 @@ Bool_t ERElasticScattering::Stepping()
 */
     if (!fDecayFinish && gMC->TrackPid() == fInputIonPDG->PdgCode() && TString(gMC->CurrentVolName()).Contains(fVolumeName))
     {
-        gMC->SetMaxStep(fStep);
         TLorentzVector curPos;
         gMC->TrackPosition(curPos);
-        //fDecayPosZ = 0.;
+        fDecayPosZ = 0.;
         if (curPos.Z() >= fDecayPosZ)
         {
+            gMC->SetMaxStep(fStep);
             TLorentzVector fInputIonV;
             gMC->TrackMomentum(fInputIonV);
             Double_t iM = GetIonMass();
@@ -366,7 +366,7 @@ void ERElasticScattering::RangesCalculate(Double_t iM, Double_t tM)
         fTheta1 = TMath::RadToDeg()*2.*(rAng - fDetThetaWRad);
         fTheta2 = TMath::RadToDeg()*2.*(rAng + fDetThetaWRad);
     }
-    LOG(DEBUG) << "  N15: CMTheta1: " << fTheta1 << ", CMTheta2: " << fTheta2
+    LOG(INFO) << "  N15: CMTheta1: " << fTheta1 << ", CMTheta2: " << fTheta2
                 << ", average value: " << 0.5*(fTheta2-fTheta1) + fTheta1 << FairLogger::endl;
 
     // Target Ion
