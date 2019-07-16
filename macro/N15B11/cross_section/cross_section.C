@@ -228,7 +228,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         Double_t dphi = dPhiAr[i]/dPhiDet;
         if (dphi == 0.) dphi = 1.;
         sigmaCMB11(i) = (Double_t)nB11Ar[i]*summAr[i]*dphi / (nEvents*2.*TMath::Pi()*TMath::Sin(TMath::DegToRad()*tetB11(i))*(-theta2+theta1));
-        fout.precision(8);
+        fout.precision(24);
         fout << tetB11(i) << "\t" << sigmaCMB11(i) << endl;
         //cout << tetB11(i) << "\t" << sigmaCMB11(i) << endl;
         Integral_11B += fThetaCDF->Eval(tetB11(i)) / sigmaCMB11(i);
