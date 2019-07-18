@@ -47,7 +47,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
 
   ERDetector* target = new ERTarget("N15B11_target", kTRUE, 1);
   target->SetGeometryFileName("N15.target.root");
-  //run->AddModule(target);
+  run->AddModule(target);
 
   FairDetector* detector = new ERN15B11Detector("N15B11detector", kTRUE, 1, index);
   detector->SetGeometryFileName("N15B11_detector.geo.root");
@@ -67,7 +67,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   scattering->SetThetaCDF("cos_tetta_cross.txt");
   scattering->SetUniformPos(-0.00035,0.00035);
   scattering->SetStep(0.00001); //0.1 micron
-  scattering->SetDecayVolume("cave"); //targetB11
+  scattering->SetDecayVolume("targetB11"); //targetB11
   scattering->SetDetAngle(angle); // argumetn is an angle of detector position in Lab
   scattering->SetDetThetaWidth(7.*0.262822833+0.262822833); // Detectors theta=4.*0.262822833 width*0.5
   //scattering->SetThetaRange(18.4, 19.4);
@@ -83,7 +83,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   //Double32_t kin_energy = 0.043; // GeV
   //generator->SetPSigma(6.7835, 6.7835*0.003);
   //generator->SetKinESigma(kin_energy, 0.);
-  generator->SetKinERange(0.043, 0.043); // 0.0427094 : 0.0436017
+  generator->SetKinERange(0.0425, 0.0435); // 0.0427094 : 0.0436017
   //generator->SpreadingOnTarget();
 
   Double32_t theta = 0.;
@@ -93,7 +93,7 @@ void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t
   generator->SetThetaRange(0., 0.); // -2 : 2
   generator->SetPhiRange(0., 0.); // 0 : 180
 
-  Double32_t distanceToTarget = 50.; // work: 50 cm, test 0.5 micron: 0.00005+0.00035
+  Double32_t distanceToTarget = 1.; // work: 50 cm, test 0.5 micron: 0.00005+0.00035
   Double32_t sigmaOnTarget = 0.;
   //generator->SetSigmaXYZ(0., 0., -distanceToTarget, sigmaOnTarget, sigmaOnTarget);
   generator->SetBoxXYZ(0., 0., 0., 0., -distanceToTarget); // Xmin = -0.5, Ymin = -0.5, Xmax = 0.5, , Ymax = 0.5, Z

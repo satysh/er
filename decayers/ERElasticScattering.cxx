@@ -166,7 +166,7 @@ Bool_t ERElasticScattering::Stepping()
     {
         TLorentzVector curPos;
         gMC->TrackPosition(curPos);
-        fDecayPosZ = 0.;
+        //fDecayPosZ = 0.;
         if (curPos.Z() >= fDecayPosZ)
         {
             gMC->SetMaxStep(fStep);
