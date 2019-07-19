@@ -1,4 +1,4 @@
-void sim(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t angle = 20.)
+void sim_3(Int_t nEvents = 100, Int_t index = 0, TString outDir="output", Double_t angle = 20.)
 {
   gRandom->SetSeed(index);
 
