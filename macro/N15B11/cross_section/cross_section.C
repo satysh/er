@@ -134,9 +134,9 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         iB = cos(curAngle+dTheta)*sqrt(1. - ratio*ratio*sin(curAngle+dTheta)*sin(curAngle+dTheta));
         iC = acos(-iA + iB);
         Double_t theta2 = TMath::RadToDeg()*iC;
-        //tetN15(i) = 0.5*(theta2-theta1) + theta1;
+        tetN15(i) = 0.5*(theta2-theta1) + theta1;
         //cout << "N15: old Theta: " << tetN15(i) << ", new Theta: " << ThetaCMAr[i] << endl;
-        tetN15(i) = ThetaCMAr[i];
+        //tetN15(i) = ThetaCMAr[i];
 
         // Curent cross-section calculate
         nEvents = nEventsAr[i];
@@ -157,7 +157,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         fout << tetN15(i) << "\t" << sigmaCMN15(i) << endl;
         Integral_15N += fThetaCDF->Eval(tetN15(i)) / sigmaCMN15(i);
         cout << "The: " << fThetaCDF->Eval(tetN15(i)) << ", sig: " << sigmaCMN15(i) << ", Int: " << fThetaCDF->Eval(tetN15(i)) / sigmaCMN15(i) << endl;
-        sigmaCMN15(i) *= 1.13034;
+        //sigmaCMN15(i) *= 1.27;
     }
     Integral_15N /= anglesNumbers;
     fout.clear();
@@ -214,7 +214,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         Double_t theta2 = 180. - 2.*TMath::RadToDeg()*(curAngle+dTheta);
         tetB11(i) = 0.5*(theta2-theta1) + theta1;
         //cout << "B11: old Theta: " << tetB11(i) << ", new Theta: " << ThetaCMAr[i] << endl;
-        tetB11(i) = ThetaCMAr[i];
+        //tetB11(i) = ThetaCMAr[i];
         // Curent cross-section for B11 calculate
         nEvents = nEventsAr[i];
 /*
@@ -232,7 +232,7 @@ void cross_section(Int_t nEvents = 100, Double_t begAng = 34., Int_t nThreads = 
         fout << tetB11(i) << "\t" << sigmaCMB11(i) << endl;
         //cout << tetB11(i) << "\t" << sigmaCMB11(i) << endl;
         Integral_11B += fThetaCDF->Eval(tetB11(i)) / sigmaCMB11(i);
-        //sigmaCMB11(i) *= 1.19;
+        //sigmaCMB11(i) *= 1.17;
     }
     Integral_11B /= anglesNumbers;
     fout.clear();
