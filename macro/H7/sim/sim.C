@@ -2,6 +2,7 @@
 void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
 {
   gRandom->SetSeed(seedIndex);
+  //if (!gROOT->GetClass("TGenPhaseSpace")) gSystem->Load("libPhysics");
 
   /* Define main path */
   TString vmcWorkDir = gSystem->Getenv("VMCWORKDIR");
@@ -140,8 +141,8 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
   generator->SetPSigmaOverP(1);
   //Double32_t sigmaTheta = 0.004*TMath::RadToDeg();
   //generator->SetThetaSigma(0., sigmaTheta);
-  generator->SetThetaRange(0., 5.);
-  generator->SetPhiRange(0., 360.);
+  generator->SetThetaRange(0., 0.);
+  generator->SetPhiRange(0., 0.);
   generator->SetBoxXYZ(0., 0., 0., 0., beamStartPosition);
   generator->SpreadingOnTarget();
 
@@ -152,7 +153,8 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
   Double_t targetH2Thickness = 0.4;
   Double_t massH5 = 4.69036244;  // [GeV]
   ERDecayer* decayer = new ERDecayer();
-  ERDecayRootPhaseSpace* targetDecay = new ERDecayRootPhaseSpace();
+  ERDecayRootPhaseSpace* targetDecay = new ERDecayRootPhaseSpace("6He+2H");
+  targetDecay->SetDecayVolumeName("boxST");
 
   decayer->AddDecay(targetDecay);
   run->SetDecayer(decayer);
