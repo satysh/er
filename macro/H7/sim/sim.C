@@ -149,29 +149,19 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
   run->SetGenerator(primGen); // add collection to simulation
 //-------------------------------------------------------------------------------
 //-------------------- Add Decay -----------------------------------------------
-/*
-  Double_t targetH2Thickness = 0.4;  // [cm] this parameter should coincide with target H2 thickness in /macro/geo/create_target_h2_geo
+  Double_t targetH2Thickness = 0.4;
   Double_t massH5 = 4.69036244;  // [GeV]
   ERDecayer* decayer = new ERDecayer();
-  ERDecayEXP1803* targetDecay = new ERDecayEXP1803();
-  targetDecay->SetInteractionVolumeName("boxCD");
-  targetDecay->SetNuclearInteractionLength(1e-3);
-  targetDecay->SetAngularDistribution("Cs_6He_d_3He_5H_35-25AMeV.txt");
-  targetDecay->SetTargetThickness(targetH2Thickness);
-  targetDecay->SetH5Mass(massH5);
-  targetDecay->SetH5Exitation(0.0004, 0.00002355, 1);
-  targetDecay->SetH5Exitation(0.0012, 0.0002355, 1);
-  targetDecay->SetMinStep(1e-5);
-  targetDecay->SetMaxPathLength(2e-4 * 10. * 1.1);
+  ERDecayRootPhaseSpace* targetDecay = new ERDecayRootPhaseSpace();
 
   decayer->AddDecay(targetDecay);
   run->SetDecayer(decayer);
-*/
+
   run->SetStoreTraj(kTRUE);
 
   /* Set LOG verbosity */
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
-  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
+  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
 
   /* Init simulations */
   run->Init();
@@ -185,7 +175,7 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
   rtdb->print();
 
   //gMC->SetMaxNStep(nSteps);
-  TString outGeoFileName = outDirName + "/" + "exp1803.setup.root";
+  TString outGeoFileName = outDirName + "/" + "exp.setup.root";
   run->CreateGeometryFile(outGeoFileName);
 
   /* Run simulation */
