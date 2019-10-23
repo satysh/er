@@ -9,9 +9,12 @@
 #ifndef ERDecayRootPhaseSpace_H
 #define ERDecayRootPhaseSpace_H
 
-#include "ERDecay.h" // mother class
-
 #include "TString.h"
+class TGenPhaseSpace;
+
+class FairIon;
+
+#include "ERDecay.h" // mother class
 
 class TParticlePDG;
 
@@ -21,9 +24,8 @@ public:
   ~ERDecayRootPhaseSpace();
 
   /*Modifiers*/
-  void SetMinStep(Double_t minStep) { fMinStep = minStep; }
   void SetTargetThickness(Double_t targetThickness) { fTargetThickness = targetThickness; }
-  void SetDecayVolumeName(TString volName) { fDecayVolumeName = volName; }
+
   /** @brief Body decay in phase space approach.
   **/
   void PhaseGenerator();
@@ -31,20 +33,23 @@ public:
   Bool_t Init();
   Bool_t Stepping();
 
-  void BeginEvent();
-  void FinishEvent();
+  //void BeginEvent();
+  //void FinishEvent();
 
 private:
-  TString fDecayVolumeName;
-
-  Double_t fMinStep;
+  TGenPhaseSpace* fPhaseSpaceGenerator;
   Double_t fTargetThickness;
 
   // TODO fix this moment 8He is nesessary!
-  TParticlePDG* fParticle6He;
+  TParticlePDG* fParticle8He;
+  TParticlePDG* fParticle3He;
   TParticlePDG* fParticle2H;
   TParticlePDG* fParticleNeutron;
+  TParticlePDG* fParticle7H;
 
+  /* New Ions */
+  FairIon* fUnstableIon7H;
+  FairIon* fIon3He;
   ClassDef(ERDecayRootPhaseSpace, 1)
 };
 

@@ -11,8 +11,6 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
   TString paramFileBeamDet = vmcWorkDir + "/db/BeamDet/BeamDetParts.xml";
   TString paramFileQTelescope = vmcWorkDir + "/db/QTelescope/QTelescopeParts.xml";
   TString targetGeoFileName = vmcWorkDir + "/geometry/target.h2.geo.root";
-  TString magnetGeoFileName = vmcWorkDir + "/geometry/magnet.geo.root";
-  TString gadastGeoFileName = vmcWorkDir + "/geometry/partOfGadast.v1.geo.root";
 
   /* Define output file names */
   TString outFile= outDirName + "/" + "sim.root";
@@ -65,12 +63,6 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
   target->SetGeometryFileName(targetGeoFileName);
   run->AddModule(target);
 
-
-  /* Create Magnet */
-  FairModule* magnet = new ERTarget("magnet", 1, kTRUE);
-  magnet->SetGeometryFileName(magnetGeoFileName);
-  run->AddModule(magnet);
-
   /* QTelescope SetUp geometry create*/
   ERQTelescopeSetup* setupQTelescope = ERQTelescopeSetup::Instance();
   setupQTelescope->SetXMLParametersFile(paramFileQTelescope);
@@ -116,11 +108,6 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
   /* Create QTelescope detector providing points */
   ERQTelescope* qtelescope= new ERQTelescope("ERQTelescope", kTRUE, verbose);
   run->AddModule(qtelescope);
-
-  /* Create Part of Gadast */
-  ERGadast* gadast = new ERGadast("PartOfGadast", kTRUE, 1);
-  gadast->SetGeometryFileName(gadastGeoFileName);
-  run->AddModule(gadast);
 //-------------------------------------------------------------------------------
 
 //-------------------- Add projectile genetarors -----------------------------
@@ -128,33 +115,33 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
 
   /* Atributes for projectile */
-  TString ionName = "6He";
-  Double_t  kinE_MevPerNucleon = 40.;
-  Int_t Z = 2, A = 6, Q = 2, mult = 1;
+  TString ionName = "8He";
+  Double_t  kinE_MevPerNucleon = 400.;
+  Int_t Z = 2, A = 8, Q = 2, mult = 1;
   Double32_t kin_energy = kinE_MevPerNucleon * 1e-3 * (Double_t)A; //GeV
   Double_t beamStartPosition = -1600.;  // [cm] Beam start position
 
   /*Create mix generator */
   ERIonMixGenerator* generator = new ERIonMixGenerator(ionName, Z, A, Q, mult);
-  generator->SetKinE(kin_energy);
-  //generator->SetPRange(kin_energy, kin_energy);
-  generator->SetPSigmaOverP(1);
-  //Double32_t sigmaTheta = 0.004*TMath::RadToDeg();
-  //generator->SetThetaSigma(0., sigmaTheta);
-  generator->SetThetaRange(0., 0.);
-  generator->SetPhiRange(0., 0.);
+  generator->SetPRange(kin_energy, kin_energy);
+  Double32_t sigmaTheta = 0.004*TMath::RadToDeg();
+  generator->SetThetaSigma(0., 0.*sigmaTheta);
+  generator->SetPhiRange(0., 360.);
   generator->SetBoxXYZ(0., 0., 0., 0., beamStartPosition);
-  generator->SpreadingOnTarget();
+  //generator->SpreadingOnTarget();
 
   primGen->AddGenerator(generator); // add mix generator to collection
   run->SetGenerator(primGen); // add collection to simulation
 //-------------------------------------------------------------------------------
+
 //-------------------- Add Decay -----------------------------------------------
   Double_t targetH2Thickness = 0.4;
-  Double_t massH5 = 4.69036244;  // [GeV]
+  Double_t massH7 = 6.5691;//7.5061760;  // [GeV]
   ERDecayer* decayer = new ERDecayer();
-  ERDecayRootPhaseSpace* targetDecay = new ERDecayRootPhaseSpace("6He+2H");
-  targetDecay->SetDecayVolumeName("boxST");
+  ERDecayRootPhaseSpace* targetDecay = new ERDecayRootPhaseSpace("8He+2H");
+  targetDecay->SetDecayVolume("tubeH2");
+  targetDecay->SetUniformPos(0., 0.);
+  targetDecay->SetStep(0.1);
 
   decayer->AddDecay(targetDecay);
   run->SetDecayer(decayer);
