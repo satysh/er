@@ -3,7 +3,7 @@
 OUTDIR=output
 
 ### run parametrs defining ###
-NEVENTS=100
+NEVENTS=1000
 
 ### Compilation ###
 cd ../../../../build/

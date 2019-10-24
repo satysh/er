@@ -70,8 +70,8 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
 
   /* Create Left Telescope geo */
   Double_t xPos, yPos, zPos;
-  Double_t radius = 23.;
-  TVector3 rotationT1(0., 12., 0.);
+  Double_t radius = 18.;
+  TVector3 rotationT1(0., 17., 0.);
   xPos = radius * TMath::Sin(rotationT1.Y() * TMath::DegToRad());
   yPos = 0.;
   zPos = radius * TMath::Cos(rotationT1.Y() * TMath::DegToRad());
@@ -87,14 +87,14 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
 
   setupQTelescope->AddSubAssembly(assemblyT1);
 
+
   /* Create Right Telescope geo*/
-  radius = 29.;
+  radius = 18.;
   TVector3 rotationT2(0., -8.27, 0.);
   xPos = radius * TMath::Sin(rotationT2.Y() * TMath::DegToRad());
   yPos = 0.;
   zPos = radius * TMath::Cos(rotationT2.Y() * TMath::DegToRad());
   ERGeoSubAssembly* assemblyT2 = new ERGeoSubAssembly("Right_telescope", TVector3(xPos, yPos, zPos), rotationT2);
-
   ERQTelescopeGeoComponentDoubleSi* thickT2 = new ERQTelescopeGeoComponentDoubleSi("DoubleSi", "DoubleSi_SQ_R",
                                                                                   TVector3(0., 0., 0.), TVector3(), "X");
   ERQTelescopeGeoComponentCsI* csi2 = new ERQTelescopeGeoComponentCsI("CsI", "CsI_R", TVector3(0., 0., 5.), TVector3());
@@ -104,6 +104,25 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
 
   setupQTelescope->AddSubAssembly(assemblyT2);
 
+  /* Create Central Telescope geo*/
+  radius = 28.;
+  TVector3 rorationCentral(0., 0., 0.);
+  xPos = 0.;
+  yPos = 0.;
+  zPos = radius;
+  ERGeoSubAssembly* assemblyCentral = new ERGeoSubAssembly("Central_telescope", TVector3(xPos, yPos, zPos), rorationCentral);
+  ERQTelescopeGeoComponentSingleSi* thinCentral = new ERQTelescopeGeoComponentSingleSi("SingleSi", "SingleSi_SQ300",
+                                                                                          TVector3(0., 0., 0.), TVector3(), "X");
+ /* ERQTelescopeGeoComponentDoubleSi* thickCentral = new ERQTelescopeGeoComponentDoubleSi("DoubleSi", "DoubleSi_SQ_R",
+                                                                                          TVector3(0., 0., 0.), TVector3(), "X");
+  */
+  ERQTelescopeGeoComponentCsI* csiCentral = new ERQTelescopeGeoComponentCsI("CsI", "CsI_R", TVector3(0., 0., 5.), TVector3());
+
+  assemblyCentral->AddComponent(thinCentral);
+  //assemblyCentral->AddComponent(thickCentral);
+  assemblyCentral->AddComponent(csiCentral);
+
+  setupQTelescope->AddSubAssembly(assemblyCentral);
 
   /* Create QTelescope detector providing points */
   ERQTelescope* qtelescope= new ERQTelescope("ERQTelescope", kTRUE, verbose);
@@ -125,10 +144,10 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
   ERIonMixGenerator* generator = new ERIonMixGenerator(ionName, Z, A, Q, mult);
   generator->SetPRange(kin_energy, kin_energy);
   Double32_t sigmaTheta = 0.004*TMath::RadToDeg();
-  generator->SetThetaSigma(0., 0.*sigmaTheta);
+  generator->SetThetaSigma(0., sigmaTheta);
   generator->SetPhiRange(0., 360.);
   generator->SetBoxXYZ(0., 0., 0., 0., beamStartPosition);
-  //generator->SpreadingOnTarget();
+  generator->SpreadingOnTarget();
 
   primGen->AddGenerator(generator); // add mix generator to collection
   run->SetGenerator(primGen); // add collection to simulation
@@ -138,10 +157,10 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
   Double_t targetH2Thickness = 0.4;
   Double_t massH7 = 6.5691;//7.5061760;  // [GeV]
   ERDecayer* decayer = new ERDecayer();
-  ERDecayRootPhaseSpace* targetDecay = new ERDecayRootPhaseSpace("8He+2H");
+  ERDecay* targetDecay = new ERDecayRootPhaseSpace("8He+2H");
   targetDecay->SetDecayVolume("tubeH2");
   targetDecay->SetUniformPos(0., 0.);
-  targetDecay->SetStep(0.1);
+  targetDecay->SetStep(0.01);
 
   decayer->AddDecay(targetDecay);
   run->SetDecayer(decayer);
@@ -150,7 +169,7 @@ void sim(Int_t nEvents = 1, TString outDirName = "", Int_t seedIndex = 0)
 
   /* Set LOG verbosity */
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
-  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
+  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
 
   /* Init simulations */
   run->Init();

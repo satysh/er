@@ -28,24 +28,23 @@ public:
 
   /** @brief Body decay in phase space approach.
   **/
-  void PhaseGenerator();
+  void PhaseGenerator(); // TODO!! Remove or implement this one!
 public:
   Bool_t Init();
   Bool_t Stepping();
 
-  //void BeginEvent();
-  //void FinishEvent();
+  void BeginEvent();
+  void FinishEvent();
 
 private:
   TGenPhaseSpace* fPhaseSpaceGenerator;
   Double_t fTargetThickness;
 
-  // TODO fix this moment 8He is nesessary!
   TParticlePDG* fParticle8He;
-  TParticlePDG* fParticle3He;
   TParticlePDG* fParticle2H;
-  TParticlePDG* fParticleNeutron;
+  TParticlePDG* fParticle3He;
   TParticlePDG* fParticle7H;
+  TParticlePDG* fParticleNeutron;
 
   /* New Ions */
   FairIon* fUnstableIon7H;
