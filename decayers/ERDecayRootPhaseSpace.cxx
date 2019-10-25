@@ -18,7 +18,6 @@
 
 // FAIRROOT
 #include "FairRunSim.h"
-#include "ERDecayMCEventHeader.h"
 #include "FairLogger.h"
 
 // EXPERTROOT
@@ -26,8 +25,7 @@
 
 //-------------------------------------------------------------------------------------------------
 ERDecayRootPhaseSpace::ERDecayRootPhaseSpace(TString name):
-  ERDecay(name),
-  fTargetThickness(0.)
+  ERDecay(name)
    {
   LOG(INFO) << "ERDecayRootPhaseSpace::ERDecayRootPhaseSpace(" << name << ")" << FairLogger::endl;
   if (!gROOT->GetClass("TGenPhaseSpace")) gSystem->Load("libPhysics");

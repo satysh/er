@@ -11,8 +11,8 @@
 // ROOT
 #include "TString.h"
 #include "TLorentzVector.h"
-class TParticlePDG;
 class TGenPhaseSpace;
+class TParticlePDG;
 
 // FAIRROOT
 class FairIon;
@@ -26,11 +26,8 @@ public:
   ~ERDecayRootPhaseSpace();
 
   /*Modifiers*/
-  void SetTargetThickness(Double_t targetThickness) { fTargetThickness = targetThickness; }
+  /* They wait to be written! */
 
-  /** @brief Body decay in phase space approach.
-  **/
-  void RootPhaseGenerator(TLorentzVector& outLV1, TLorentzVector& outLV2);
 public:
   Bool_t Init();
   Bool_t Stepping();
@@ -39,8 +36,11 @@ public:
   void FinishEvent();
 
 private:
+  /** @brief Private method. Body decay in phase space approach.
+  **/
+  void RootPhaseGenerator(TLorentzVector& outLV1, TLorentzVector& outLV2);
+
   TGenPhaseSpace* fPhaseSpaceGenerator;
-  Double_t fTargetThickness;
 
   TParticlePDG* fParticle8He;
   TParticlePDG* fParticle2H;
