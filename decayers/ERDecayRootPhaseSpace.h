@@ -8,15 +8,17 @@
 
 #ifndef ERDecayRootPhaseSpace_H
 #define ERDecayRootPhaseSpace_H
-
+// ROOT
 #include "TString.h"
+#include "TLorentzVector.h"
+class TParticlePDG;
 class TGenPhaseSpace;
 
+// FAIRROOT
 class FairIon;
 
+// EXPERTROOT
 #include "ERDecay.h" // mother class
-
-class TParticlePDG;
 
 class ERDecayRootPhaseSpace : public ERDecay {
 public:
@@ -28,7 +30,7 @@ public:
 
   /** @brief Body decay in phase space approach.
   **/
-  void PhaseGenerator(); // TODO!! Remove or implement this one!
+  void RootPhaseGenerator(TLorentzVector& outLV1, TLorentzVector& outLV2);
 public:
   Bool_t Init();
   Bool_t Stepping();
@@ -49,6 +51,7 @@ private:
   /* New Ions */
   FairIon* fUnstableIon7H;
   FairIon* fIon3He;
+
   ClassDef(ERDecayRootPhaseSpace, 1)
 };
 

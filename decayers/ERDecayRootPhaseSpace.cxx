@@ -9,11 +9,10 @@
 #include <iostream>
 
 // ROOT
-#include "TROOT.h"
+#include "TROOT.h" // for gROOT using
+#include "TVirtualMC.h" // for gMC using
 #include "TVector3.h"
-#include "TLorentzVector.h"
 #include "TParticlePDG.h"
-#include "TVirtualMC.h"
 #include "TGenPhaseSpace.h"
 
 
@@ -112,47 +111,14 @@ Bool_t ERDecayRootPhaseSpace::Stepping() {
 	  gMC->TrackPosition(curBeamPos);
     if (curBeamPos.Z() >= fDecayPosZ) {
       std::cout << "[Stepping] " << "ERDecayRootPhaseSpace::Stepping(" << gMC->CurrentVolName() << ")" << std::endl;
-      TLorentzVector target(0., 0., 0., fParticle2H->Mass());
-      TLorentzVector curBeamMom;
-      gMC->TrackMomentum(curBeamMom);
-      std::cout << "[Stepping] " << "8He mass is " << fParticle8He->Mass() << ", 2H mass is " << fParticle2H->Mass() << std::endl;
-      std::cout << "[Stepping] " << "Before Boost Beam Momentum of 8He: " << "Px = " << curBeamMom.X() << ", Py = " << curBeamMom.Y()
-                << ", Pz = " << curBeamMom.Z() << ", E = " << curBeamMom.T() << " GeV" << std::endl;
-      Double_t pM = fParticle8He->Mass();
-      Double_t pM2= pM*pM;
-      Double_t projectileIonIonT = sqrt(pow(curBeamMom.P(), 2)+pM2) - pM;
-      std::cout << "[Stepping] " << "8He T is " << projectileIonIonT << " GeV" << std::endl;
-      TLorentzVector W = target + curBeamMom;
-      TVector3 BoostVector = W.BoostVector();
-      std::cout << "[Stepping] " << "3He mass is " << fParticle3He->Mass() << ", 7H mass is " << fParticle7H->Mass() << std::endl;
-
-      /* Processing */
-      Double_t masses[3] = { fParticle8He->Mass()/8., fParticle3He->Mass()/3., fParticle7H->Mass()/7.};
-      fPhaseSpaceGenerator->SetDecay(W, 3, masses);
-      Double_t weight = fPhaseSpaceGenerator->Generate();
-      std::cout << "[Stepping] " << "weight of the reaction is " << weight << std::endl;
-
-      TLorentzVector* p8HeLV = fPhaseSpaceGenerator->GetDecay(0);
-      TLorentzVector* pNew3HeLV = fPhaseSpaceGenerator->GetDecay(1);
-      TLorentzVector* pNew7HLV = fPhaseSpaceGenerator->GetDecay(2);
-
-      pNew3HeLV->Boost(BoostVector);
-      pNew7HLV->Boost(BoostVector);
-
-      TLorentzVector new3HeLV = *p8HeLV + *pNew3HeLV;
-      TLorentzVector new7HLV = *p8HeLV + *pNew7HLV;
-
       std::cout << "[Stepping] " << "curBeamPos: " << "X = " << curBeamPos.X() << ", Y = " << curBeamPos.Y()
                 << ", Z = " << curBeamPos.Z() << ", Time = " << curBeamPos.T() << std::endl;
-      std::cout << "[Stepping] " << "After Boost Beam Momentum of 3He: " << "Px = " << new3HeLV.X() << ", Py = " << new3HeLV.Y()
-                << ", Pz = " << new3HeLV.Z() << ", E = " << new3HeLV.T() << " GeV" << std::endl;
-      std::cout << "[Stepping] " << "After Boost Beam Momentum of 7H: " << "Px = " << new7HLV.X() << ", Py = " << new7HLV.Y()
-                << ", Pz = " << new7HLV.Z() << ", E = " << new7HLV.T() << " GeV" << std::endl;
 
+      TLorentzVector new3HeLV(0., 0., 0., 0.);
+      TLorentzVector new7HLV(0., 0., 0., 0.);
+      RootPhaseGenerator(new3HeLV, new7HLV); // Filling of the LV's
       Int_t projectileTrackNb = gMC->GetStack()->GetCurrentTrackNumber();
       Int_t He3TrackNb, H7TrackNb;
-      std::cout << "[Stepping] " << "projectileTrackNb is " << projectileTrackNb << std::endl;
-
       gMC->GetStack()->PushTrack(1, projectileTrackNb, fParticle3He->PdgCode(),
                                  new3HeLV.Px(), new3HeLV.Py(), new3HeLV.Pz(),
                                  new3HeLV.E(), curBeamPos.X(), curBeamPos.Y(), curBeamPos.Z(),
@@ -163,22 +129,9 @@ Bool_t ERDecayRootPhaseSpace::Stepping() {
                                  new7HLV.E(), curBeamPos.X(), curBeamPos.Y(), curBeamPos.Z(),
                                  gMC->TrackTime(), 0., 0., 0.,
                                  kPDecay, H7TrackNb, fParticle7H->Mass(), 0);
-
-      std::cout << "[Stepping] " << "7H trackNb is " << H7TrackNb << std::endl;
-
       fDecayFinish=kTRUE; // It'is impossble to do It here! Why is It so?
       gMC->StopTrack();
       gMC->SetMaxStep(10000.);
-/*
-      FairRunSim* run = FairRunSim::Instance();
-      if (TString(run->GetMCEventHeader()->ClassName()).Contains("ERDecayMCEventHeader")){
-        ERDecayMCEventHeader* header = (ERDecayMCEventHeader*)run->GetMCEventHeader();
-        header->SetDecayPos(curBeamPos.Vect());
-        header->SetInputIon(projectileTrackNb);
-        header->AddOutputParticle(He3TrackNb);
-        header->AddOutputParticle(H7TrackNb);
-      }
-*/
     }
  	}
   return kTRUE;
@@ -196,19 +149,57 @@ void ERDecayRootPhaseSpace::BeginEvent() {
 //-------------------------------------------------------------------------------------------------
 void ERDecayRootPhaseSpace::FinishEvent() {
 	LOG(DEBUG) << "ERDecayRootPhaseSpace::FinishEvent()" << FairLogger::endl;
-/*
-	FairRunSim* run = FairRunSim::Instance();
-
-  if (TString(run->GetMCEventHeader()->ClassName()).Contains("ERDecayMCEventHeader")){
-    ERDecayMCEventHeader* header = (ERDecayMCEventHeader*)run->GetMCEventHeader();
-    header->Clear();
-  }
-*/
 }
 
 //-------------------------------------------------------------------------------------------------
-void ERDecayRootPhaseSpace::PhaseGenerator() {
-  /* TODO! If It isn't nesessary so It has to get removed */
+void ERDecayRootPhaseSpace::RootPhaseGenerator(TLorentzVector &outLV1, TLorentzVector &outLV2) {
+  TLorentzVector target(0., 0., 0., fParticle2H->Mass());
+  TLorentzVector curBeamMom;
+  gMC->TrackMomentum(curBeamMom);
+  std::cout << "[RootPhaseGenerator] " << "8He mass is " << fParticle8He->Mass() << ", 2H mass is " << fParticle2H->Mass() << std::endl;
+  std::cout << "[RootPhaseGenerator] " << "LV of 8He: " << "Px = " << curBeamMom.X() << ", Py = " << curBeamMom.Y()
+            << ", Pz = " << curBeamMom.Z() << ", E = " << curBeamMom.T() << " GeV" << std::endl;
+
+  Double_t pM = fParticle8He->Mass();
+  Double_t pM2= pM*pM;
+  Double_t projectileIonIonT = sqrt(pow(curBeamMom.P(), 2)+pM2) - pM;
+  std::cout << "[RootPhaseGenerator] " << "8He T is " << projectileIonIonT << " GeV" << std::endl;
+
+  TLorentzVector W = target + curBeamMom;
+  TVector3 BoostVector = W.BoostVector();
+  std::cout << "[RootPhaseGenerator] " << "3He mass is " << fParticle3He->Mass() << ", 7H mass is " << fParticle7H->Mass() << std::endl;
+
+  /* Processing */
+  Double_t masses[3] = { fParticle8He->Mass()/8., fParticle3He->Mass()/3., fParticle7H->Mass()/7.};
+  fPhaseSpaceGenerator->SetDecay(W, 3, masses);
+  Double_t weight = fPhaseSpaceGenerator->Generate();
+  TLorentzVector* p8HeLV = fPhaseSpaceGenerator->GetDecay(0);
+  TLorentzVector* pNew3HeLV = fPhaseSpaceGenerator->GetDecay(1);
+  TLorentzVector* pNew7HLV = fPhaseSpaceGenerator->GetDecay(2);
+  std::cout << "[RootPhaseGenerator] " << "weight of the reaction is " << weight << std::endl;
+
+  /* Write results Moments to the LV's */
+  outLV1 = *p8HeLV + *pNew3HeLV;
+  outLV2 = *p8HeLV + *pNew7HLV;
+
+  std::cout << "[RootPhaseGenerator] " << "Before Boost LV of 3He: " << "Px = " << outLV1.X() << ", Py = " << outLV1.Y()
+            << ", Pz = " << outLV1.Z() << ", E = " << outLV1.T() << " GeV" << std::endl;
+  std::cout << "[RootPhaseGenerator] " << "Before Boost LV of 7H: " << "Px = " << outLV2.X() << ", Py = " << outLV2.Y()
+            << ", Pz = " << outLV2.Z() << ", E = " << outLV2.T() << " GeV" << std::endl;
+
+  outLV1.Boost(BoostVector);
+  outLV2.Boost(BoostVector);
+
+  std::cout << "[RootPhaseGenerator] " << "After Boost LV of 3He: " << "Px = " << outLV1.X() << ", Py = " << outLV1.Y()
+            << ", Pz = " << outLV1.Z() << ", E = " << outLV1.T() << " GeV" << std::endl;
+  std::cout << "[RootPhaseGenerator] " << "After Boost LV of 7H: " << "Px = " << outLV2.X() << ", Py = " << outLV2.Y()
+            << ", Pz = " << outLV2.Z() << ", E = " << outLV2.T() << " GeV" << std::endl;
+
+  /* Physics checking */
+  std::cout << "[RootPhaseGenerator] " << "8He P is " << curBeamMom.P() << std::endl;
+  std::cout << "[RootPhaseGenerator] " << "3He + 7H P is " << sqrt(pow(outLV1.P(), 2)+pow(outLV2.P(), 2)) << std::endl;
+  std::cout << "[RootPhaseGenerator] " << "8He E is " << curBeamMom.E() << std::endl;
+  std::cout << "[RootPhaseGenerator] " << "3He E + 7H E is " << outLV1.E()+outLV2.E() << std::endl;
 }
 
 ClassImp(ERDecayRootPhaseSpace)
